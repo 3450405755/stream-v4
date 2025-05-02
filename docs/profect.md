@@ -1,2 +1,14 @@
 1.ods层,用flinkcdc采取mysql业务数据数据到kafka,效果如下:
-![img.png](img.png)
+![img.png](imgs/img.png)
+2.dim层从广播流提取主流写入到hbase里:
+![img_1.png](imgs/img_1.png)
+3.新老用户,从kafka获取日志信息,然后使用工具类读取kafka,将日志信息分流分别存入到kafka,提取启动日志信息做新老用户,写入到kafuka：
+![img.png](imgs/img1.png)
+4.flinksqlods层连接hbase写入到kafka
+![img.png](imgs/img2.png)
+![img_1.png](imgs/img_3.png)
+5.dws读取kafka数据连接hbase数据写入到doris
+![img.png](imgs/img_4.png)
+![img.png](imgs/img_5.png)
+6.报表,统计各省份下单金额,各品牌订单金额,各商品下单总金额
+![img.png](imgs/img_6.png)

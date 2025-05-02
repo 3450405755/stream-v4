@@ -153,9 +153,9 @@ public class Dwd_Trade_Order_PaySucDetail {
                 "PRIMARY KEY (order_detail_id) NOT ENFORCED " +
                 ")" + SQLUtil.getUpsertKafkaDDL(Constant.TOPIC_DWD_TRADE_ORDER_PAYMENT_SUCCESS));
 
-        //result.execute().print();
+        result.execute().print();
 
-        result.executeInsert(Constant.TOPIC_DWD_TRADE_ORDER_PAYMENT_SUCCESS);
+        //result.executeInsert(Constant.TOPIC_DWD_TRADE_ORDER_PAYMENT_SUCCESS);
 
 
     }

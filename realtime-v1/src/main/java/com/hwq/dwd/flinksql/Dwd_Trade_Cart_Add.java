@@ -83,7 +83,7 @@ public class Dwd_Trade_Cart_Add {
                 "        JOIN base_dic FOR SYSTEM_TIME AS OF c.pt AS dic\n" +
                 "        ON c.appraise = dic.dic_code");
 
-        //commont_lookupjion_dic.execute().print();
+        commont_lookupjion_dic.execute().print();
 
 
         tEnv.executeSql("  CREATE TABLE "+ Constant.TOPIC_DWD_INTERACTION_COMMENT_INFO +" (\n" +
@@ -103,7 +103,7 @@ public class Dwd_Trade_Cart_Add {
                 "        'value.format' = 'json'\n" +
                 "      )");
 
-       commont_lookupjion_dic.executeInsert(Constant.TOPIC_DWD_INTERACTION_COMMENT_INFO);
+       //commont_lookupjion_dic.executeInsert(Constant.TOPIC_DWD_INTERACTION_COMMENT_INFO);
 
 
 

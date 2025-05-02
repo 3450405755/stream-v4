@@ -86,7 +86,7 @@ public class new_to_old {
 
         new_old.print();
 
-        new_old.addSink(KafkaUtil.getKafkaSink("new_old_log"));
+        //new_old.addSink(KafkaUtil.getKafkaSink("new_old_log"));
 
 
         env.execute();
