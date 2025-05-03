@@ -8,7 +8,12 @@
 ![img.png](imgs/img2.png)
 ![img_1.png](imgs/img_3.png)
 5.dws读取kafka数据连接hbase数据写入到doris
+(1)sku粒度下单业务过程聚合统计
 ![img.png](imgs/img_4.png)
 ![img.png](imgs/img_5.png)
+(2)按照版本、地区、渠道、新老访客对pv、uv、sv、dur进行聚合统计：
+![img.png](imgs/img_7.png)
+(3)统计各省份订单金额
+![img.png](imgs/img_8.png)
 6.报表,统计各省份下单金额,各品牌订单金额,各商品下单总金额
 ![img.png](imgs/img_6.png)

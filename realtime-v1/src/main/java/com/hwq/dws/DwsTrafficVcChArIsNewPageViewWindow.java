@@ -64,7 +64,7 @@ public class DwsTrafficVcChArIsNewPageViewWindow {
         //jsonObject.print();
 
         KeyedStream<JSONObject, String> keyedStream = jsonObject.keyBy(o -> o.getJSONObject("common").getString("mid"));
-        //keyedStream.print();
+//        keyedStream.print();
 
         SingleOutputStreamOperator<TrafficPageViewBean> beanDs = keyedStream.map(new RichMapFunction<JSONObject, TrafficPageViewBean>() {
             ValueState<String> state;
