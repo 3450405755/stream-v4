@@ -109,6 +109,7 @@ public class dim_kafka_to_hbase {
                 .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "MySQL Source");
         //dbDimStrDS.print("sx_002_v2--->");
 
+        //把jsonobject转换成实体类
         SingleOutputStreamOperator<TableProcessDin> dbDimTabDS = dbDimStrDS.map(new MapFunction<String, TableProcessDin>() {
             @Override
             public TableProcessDin map(String s) {
@@ -135,7 +136,7 @@ public class dim_kafka_to_hbase {
         // 将配置流中的配置信息进行广播 -----broadcast
 
         MapStateDescriptor<String, TableProcessDin> mapStateDescriptor = new MapStateDescriptor<>("state", String.class, TableProcessDin.class);
-
+        //设置广播流
         BroadcastStream<TableProcessDin> broadcast = dbDimTabDS.broadcast(mapStateDescriptor);
         //主流connect广播流
         BroadcastConnectedStream<JSONObject, TableProcessDin> connect = dbObjDS.connect(broadcast);
@@ -144,13 +145,14 @@ public class dim_kafka_to_hbase {
         };
 
         SingleOutputStreamOperator<Tuple2<JSONObject, TableProcessDin>> dimDS = connect.process(new BroadcastProcessFunction<JSONObject, TableProcessDin, Tuple2<JSONObject, TableProcessDin>>() {
+            //主流
             @Override
             public void processElement(JSONObject jsonObj, BroadcastProcessFunction<JSONObject, TableProcessDin, Tuple2<JSONObject, TableProcessDin>>.ReadOnlyContext readOnlyContext, Collector<Tuple2<JSONObject, TableProcessDin>> out) throws Exception {
                 //主流 状态变量
                 ReadOnlyBroadcastState<String, TableProcessDin> state = readOnlyContext.getBroadcastState(mapStateDescriptor);
 
                 Thread.sleep(100);
-//                System.out.println("processElement" + jsonObj);
+                System.out.println("processElement" + jsonObj);
                 //获取主流内的table表名
                 String table = jsonObj.getJSONObject("source").getString("table");
 
@@ -177,10 +179,11 @@ public class dim_kafka_to_hbase {
                 }
             }
 
+            //广播流
             @Override
             public void processBroadcastElement(TableProcessDin tp, BroadcastProcessFunction<JSONObject, TableProcessDin, Tuple2<JSONObject, TableProcessDin>>.Context context, Collector<Tuple2<JSONObject, TableProcessDin>> collector) throws Exception {
                 //广播流
-//                System.out.println("processBroadcastElement" + tp);
+                System.out.println("processBroadcastElement" + tp);
                 //获取 op 操作状态
                 String op = tp.getOp();
                 //获取 要写入状态算子的 数据
@@ -200,49 +203,49 @@ public class dim_kafka_to_hbase {
         dimDS.print("1-->");
 
 
-//        dimDS.addSink(new SinkFunction<Tuple2<JSONObject, TableProcessDin>>() {
-//            @Override
-//            public void invoke(Tuple2<JSONObject, TableProcessDin> value, Context context) throws Exception {
-//                JSONObject jsonObj = value.f0;
-//                TableProcessDin TableProcessDin = value.f1;
-//                String type = jsonObj.getString("type");
-//                jsonObj.remove("type");
-//
-//                //获取操作的HBase表的表名
-//                String sinkTable = TableProcessDin.getSinkTable();
-//                //获取rowkey
-//                String rowKey = jsonObj.getString(TableProcessDin.getSinkRowKey());
-//                //判断对业务数据库维度表进行了什么操作
-//                HbaseUtils hbaseUtils = new HbaseUtils("cdh01,cdh02,cdh03");
-//                if ("d".equals(type)) {
-//                    //从业务数据库维度表中做了删除操作  需要将HBase维度表中对应的记录也删除掉
-//                   // HbaseUtils.delRow(hbaseConn, Constant.HBASE_NAMESPACE, sinkTable, rowKey);
-//                } else {
-//                    //如果不是delete，可能的类型有insert、update、bootstrap-insert，上述操作对应的都是向HBase表中put数据
-//                    String sinkFamily = TableProcessDin.getSinkFamily();
-//                   // HbaseUtils.putRow(hbaseConn, Constant.HBASE_NAMESPACE, sinkTable, rowKey, sinkFamily, jsonObj);
-//                    // 2. 配置要写入的表名、行键和数据
-//                     // 替换为实际的表名
-//                    TableName tableName = TableName.valueOf("dim_to_hbases", sinkTable);
-//                    System.out.println(tableName);
-//                    // 3. 创建 BufferedMutator，用于批量写入数据
-//                    BufferedMutatorParams params = new BufferedMutatorParams(tableName);
-//                    BufferedMutator mutator = hbaseUtils.getConnection().getBufferedMutator(params);
-//
-//                    // 4. 调用 HbaseUtils 的 put 方法写入数据
-//                    HbaseUtils.put(rowKey, jsonObj, mutator);
-//
-//                    // 5. 刷新缓冲区并关闭 BufferedMutator
-//                    mutator.flush();
-//                    mutator.close();
-//
-//                    // 6. 关闭 HBase 连接（可选，根据实际情况决定是否关闭）
-//                    hbaseUtils.getConnection().close();
-//
-//                    System.out.println("数据已成功写入 HBase 表：" + tableName);
-//                }
-//            }
-//        });
+        dimDS.addSink(new SinkFunction<Tuple2<JSONObject, TableProcessDin>>() {
+            @Override
+            public void invoke(Tuple2<JSONObject, TableProcessDin> value, Context context) throws Exception {
+                JSONObject jsonObj = value.f0;
+                TableProcessDin TableProcessDin = value.f1;
+                String type = jsonObj.getString("type");
+                jsonObj.remove("type");
+
+                //获取操作的HBase表的表名
+                String sinkTable = TableProcessDin.getSinkTable();
+                //获取rowkey
+                String rowKey = jsonObj.getString(TableProcessDin.getSinkRowKey());
+                //判断对业务数据库维度表进行了什么操作
+                HbaseUtils hbaseUtils = new HbaseUtils("cdh01,cdh02,cdh03");
+                if ("d".equals(type)) {
+                    //从业务数据库维度表中做了删除操作  需要将HBase维度表中对应的记录也删除掉
+                   // HbaseUtils.delRow(hbaseConn, Constant.HBASE_NAMESPACE, sinkTable, rowKey);
+                } else {
+                    //如果不是delete，可能的类型有insert、update、bootstrap-insert，上述操作对应的都是向HBase表中put数据
+                    String sinkFamily = TableProcessDin.getSinkFamily();
+                   // HbaseUtils.putRow(hbaseConn, Constant.HBASE_NAMESPACE, sinkTable, rowKey, sinkFamily, jsonObj);
+                    // 2. 配置要写入的表名、行键和数据
+                     // 替换为实际的表名
+                    TableName tableName = TableName.valueOf("dim_to_hbases", sinkTable);
+                    System.out.println(tableName);
+                    // 3. 创建 BufferedMutator，用于批量写入数据
+                    BufferedMutatorParams params = new BufferedMutatorParams(tableName);
+                    BufferedMutator mutator = hbaseUtils.getConnection().getBufferedMutator(params);
+
+                    // 4. 调用 HbaseUtils 的 put 方法写入数据
+                    HbaseUtils.put(rowKey, jsonObj, mutator);
+
+                    // 5. 刷新缓冲区并关闭 BufferedMutator
+                    mutator.flush();
+                    mutator.close();
+
+                    // 6. 关闭 HBase 连接（可选，根据实际情况决定是否关闭）
+                    hbaseUtils.getConnection().close();
+
+                    System.out.println("数据已成功写入 HBase 表：" + tableName);
+                }
+            }
+        });
         env.execute();
 
 

@@ -70,12 +70,13 @@ public class DwsTradeCartAddUuWindow {
 
         //page_filter.print();
 
+        //水位线
         SingleOutputStreamOperator<String> page_water = page_filter.assignTimestampsAndWatermarks(WatermarkStrategy.<String>forMonotonousTimestamps().withTimestampAssigner((SerializableTimestampAssigner<String>) (s, l) -> {
             JSONObject jsonObject = JSON.parseObject(s);
             return jsonObject.getLong("ts");
         }));
 
-        //page_water.print();
+        page_water.print();
 
         SingleOutputStreamOperator<UserLoginBean> page_fen = page_water.keyBy(o -> JSON.parseObject(o).getJSONObject("common").getString("uid"))
                 .process(new KeyedProcessFunction<String, String, UserLoginBean>() {
@@ -95,6 +96,7 @@ public class DwsTradeCartAddUuWindow {
                         JSONObject jsonObject = JSON.parseObject(s);
                         Long ts = jsonObject.getLong("ts");
                         String TsDate = DateFormatUtil.tsToDate(ts);
+                        //记录数据变化
                         long uuCt = 0L;
                         long backCt = 0L;
                         if (StringUtils.isNotEmpty(lastDate)) {
@@ -135,6 +137,7 @@ public class DwsTradeCartAddUuWindow {
                 new AllWindowFunction<UserLoginBean, UserLoginBean, TimeWindow>() {
                     @Override
                     public void apply(TimeWindow window, Iterable<UserLoginBean> values, Collector<UserLoginBean> out) {
+                        //获取数据
                         UserLoginBean bean = values.iterator().next();
                         String stt = DateFormatUtil.tsToDateTime(window.getStart());
                         String edt = DateFormatUtil.tsToDateTime(window.getEnd());

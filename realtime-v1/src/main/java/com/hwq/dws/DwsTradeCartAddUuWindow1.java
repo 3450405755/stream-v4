@@ -86,7 +86,7 @@ public class DwsTradeCartAddUuWindow1 {
                     public void open(Configuration parameters) {
                         ValueStateDescriptor<String> valueStateDescriptor
                                 = new ValueStateDescriptor<String>("lastCartDateState", String.class);
-                        valueStateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(1)).build());
+                       // valueStateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(1)).build());
                         lastCartDateState = getRuntimeContext().getState(valueStateDescriptor);
                     }
 
@@ -139,6 +139,7 @@ public class DwsTradeCartAddUuWindow1 {
                 new AllWindowFunction<Long, CartAddUuBean, TimeWindow>() {
                     @Override
                     public void apply(TimeWindow window, Iterable<Long> values, Collector<CartAddUuBean> out) {
+                        //时间出现偏移,所以处以1000,把时间转换成毫秒
                         Long cartUUCt = values.iterator().next();
                         long l = window.getStart() / 1000;
                         String stt = DateFormatUtil.tsToDateTime(l);

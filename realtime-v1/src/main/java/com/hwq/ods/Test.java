@@ -22,10 +22,10 @@ import java.util.Properties;
 public class Test {
     public static void main(String[] args) throws Exception {
         Properties properties = new Properties();
-
+        //设置微妙和把decmial换成double
         properties.setProperty("decimal.handling.mode","double");
         properties.setProperty("time.precision.mode","connect");
-
+        //flinkcdc采集
         MySqlSource<String> mySqlSource = MySqlSource.<String>builder()
                 .hostname("cdh03")
                 .port(3306)
@@ -54,6 +54,7 @@ public class Test {
         // "table":"order_detail","server_id":1,"gtid":null,"file":"mysql-bin.000002","pos":3825924,"row":0,"thread":null,"query":null},"op":"c","ts_ms":1744091723610,"transaction":null}
         //ds1.print();
 
+        //判断是否是json格式
         SingleOutputStreamOperator<String> kafka = ds1.filter(new FilterFunction<String>() {
             @Override
             public boolean filter(String s) {

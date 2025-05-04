@@ -92,6 +92,7 @@ public class DwsTradeProvinceOrderWindow {
                     public void open(Configuration parameters) {
                         ValueStateDescriptor<JSONObject> valueStateDescriptor
                                 = new ValueStateDescriptor<>("lastJsonObjState", JSONObject.class);
+                        //设置状态时间
                         valueStateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(10)).build());
                         lastJsonObjState = getRuntimeContext().getState(valueStateDescriptor);
                     }
@@ -168,6 +169,7 @@ public class DwsTradeProvinceOrderWindow {
                     @Override
                     public void apply(String s, TimeWindow window, Iterable<TradeProvinceOrderBean> input, Collector<TradeProvinceOrderBean> out) {
                         TradeProvinceOrderBean orderBean = input.iterator().next();
+                        //时间出现偏移,所以处以1000,把时间转换成毫秒
                         long l = window.getStart() / 1000;
                         String stt = DateFormatUtil.tsToDateTime(l);
                         long l1 = window.getEnd() / 1000;

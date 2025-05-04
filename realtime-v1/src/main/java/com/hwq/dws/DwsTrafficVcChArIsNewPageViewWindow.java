@@ -72,6 +72,7 @@ public class DwsTrafficVcChArIsNewPageViewWindow {
             @Override
             public void open(Configuration parameters) {
                 ValueStateDescriptor<String> value1 = new ValueStateDescriptor<>("state", String.class);
+                //设置状态时间
                 value1.enableTimeToLive(StateTtlConfig.newBuilder(Time.days(1)).build());
                 state = getRuntimeContext().getState(value1);
             }
@@ -86,6 +87,7 @@ public class DwsTrafficVcChArIsNewPageViewWindow {
                 Long ts = jsonObject.getLong("ts");
                 String tsDate = DateFormatUtil.tsToDate(ts);
                 long uvCt = 0L;
+                //如果上一次访问日期不为空并且上一次日期不包含今天访问日期
                 if (StringUtils.isEmpty(lastDate) || !lastDate.equals(tsDate)) {
                     uvCt = 1L;
                     state.update(tsDate);
