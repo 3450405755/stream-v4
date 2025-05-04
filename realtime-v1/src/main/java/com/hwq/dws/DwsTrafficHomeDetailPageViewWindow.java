@@ -95,6 +95,7 @@ public class DwsTrafficHomeDetailPageViewWindow {
 
                         ValueStateDescriptor<String> detailValueStateDescriptor
                                 = new ValueStateDescriptor<>("detailLastVisitDateState", String.class);
+                        //设置状态时间
                         detailValueStateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.days(1)).build());
                         detailLastVisitDateState = getRuntimeContext().getState(detailValueStateDescriptor);
 
@@ -144,7 +145,7 @@ public class DwsTrafficHomeDetailPageViewWindow {
                     public TrafficHomeDetailPageViewBean reduce(TrafficHomeDetailPageViewBean value1, TrafficHomeDetailPageViewBean value2) {
                         value1.setHomeUvCt(value1.getHomeUvCt() + value2.getHomeUvCt());
                         value1.setGoodDetailUvCt(value1.getGoodDetailUvCt() + value2.getGoodDetailUvCt());
-                        return value1;
+                       return value1;
                     }
                 },
                 new AllWindowFunction<TrafficHomeDetailPageViewBean, TrafficHomeDetailPageViewBean, TimeWindow>() {
