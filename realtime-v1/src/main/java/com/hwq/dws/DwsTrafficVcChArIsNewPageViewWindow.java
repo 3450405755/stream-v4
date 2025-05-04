@@ -33,7 +33,7 @@ import org.apache.flink.util.Collector;
 /**
  * @Package com.hwq.dws.DwsTrafficVcChArIsNewPageViewWindow
  * @Author hu.wen.qi
- * @Date 2025/4/16 9:52
+ * @Date 2025/5/4
  * @description: 1
  * 按照版本、地区、渠道、新老访客对pv、uv、sv、dur进行聚合统计
  *   需要启动的进程

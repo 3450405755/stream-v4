@@ -15,9 +15,9 @@ import java.sql.Connection;
 import java.util.*;
 
 /**
- * @Package com.zsf.retail.v1.realtime.dwd.BaseDbTableProcessFunction
- * @Author zhao.shuai.fei
- * @Date 2025/4/11 11:40
+ * @Package com.hwq.retail.v1.realtime.dwd.BaseDbTableProcessFunction
+ * @Author hu.wen.qi
+ * @Date 2025/5/4 11:40
  * @description:
  */
 @SuppressWarnings("ALL")

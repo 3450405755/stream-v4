@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * @author han.zhou
- * @time: 2021/10/14 11:39
+ * @Author hu.wen.qi
+ * @time: 2025/5/4 11:39
  * @className: HBaseUtils
  * @description HBase 工具类
  */

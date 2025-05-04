@@ -8,9 +8,9 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 /**
- * @Package com.zsf.retail.v1.realtime.dwd.DwdTradeOrderPaySucDetail
- * @Author zhao.shuai.fei
- * @Date 2025/4/10 21:33
+ * @Package com.hwq.retail.v1.realtime.dwd.DwdTradeOrderPaySucDetail
+ * @Author hu.wen.qi
+ * @Date 2025/5/4 21:33
  * @description:支付成功事实表
  */
 public class Dwd_Trade_Order_PaySucDetail {

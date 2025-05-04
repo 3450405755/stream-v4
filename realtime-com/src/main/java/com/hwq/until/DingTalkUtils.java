@@ -15,8 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * @author weikaijun
- * @date 2021-09-27 09:52
+ * @Author hu.wen.qi
+ * @date 2025-05-4 09:52
  **/
 public class DingTalkUtils {
     private static List<String> BIG_DATA_GROUP_USER = Arrays.asList("15906211002", "18625256191", "13815404021");

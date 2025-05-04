@@ -8,8 +8,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * @Package com.retailersv1.CustomStringSerializationSchema
- * @Author zhou.han
- * @Date 2024/12/14 20:10
+ * @Author hu.wen.qi
+ * @Date 2025/5/4 20:10
  * @description: 1
  */
 public class CustomStringSerializationSchema implements KafkaSerializationSchema<String> {

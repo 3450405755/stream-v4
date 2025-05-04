@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @author Felix
- * @date 2024/5/27
+ * @Author hu.wen.qi
+ * @date 2025/5/4
  * 操作HBase的工具类
  */
 public class HBaseUtil {

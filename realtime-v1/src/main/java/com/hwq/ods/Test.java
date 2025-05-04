@@ -14,7 +14,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import java.util.Properties;
 
 /**
- * @Package com.hwq.ral
+ * @Package com.hwq
  * @Author hu.wen.qi
  * @Date 2025/04/30 11:29
  * @description: 1

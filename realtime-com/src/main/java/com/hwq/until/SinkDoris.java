@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * @Package com.hwq.until.SinkDoris
  * @Author hu.wen.qi
- * @Date 2025/4/16 22:15
+ * @Date 2025/5/4 22:15
  * @description: 1
  */
 public class SinkDoris {

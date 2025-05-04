@@ -31,7 +31,7 @@ import org.apache.flink.util.Collector;
 /**
  * @Package 独立用户以及回流用户聚合统计
  * @Author hu.wen.qi
- * @Date 2025/4/15 14:05
+ * @Date 2025/5/4
  * @description: 1
  */
 public class DwsTradeCartAddUuWindow {

@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
 import java.util.Properties;
 
 /**
- * @author Felix
- * @date 2024/5/29
+ * @Author hu.wen.qi
+ * @date 2025/5/4
  * 获取相关Source的工具类
  */
 public class FlinkSinkUtil {

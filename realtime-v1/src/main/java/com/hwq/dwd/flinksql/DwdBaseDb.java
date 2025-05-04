@@ -25,9 +25,9 @@ import org.apache.flink.util.Collector;
 import java.util.*;
 
 /**
- * @Package com.zsf.retail.v1.realtime.dwd.DwdBaseDb
- * @Author zhao.shuai.fei
- * @Date 2025/4/11 10:01
+ * @Package com.hwq.retail.v1.realtime.dwd.DwdBaseDb
+ * @Author hu.wen.qi
+ * @Date 2025/5/4
  * @description:处理逻辑比较简单的事实表动态分流处理
  */
 public class DwdBaseDb {

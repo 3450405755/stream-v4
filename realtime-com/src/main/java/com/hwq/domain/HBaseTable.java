@@ -1,10 +1,14 @@
 package com.hwq.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 
 /**
- * @author han.zhou
- * @time: 2021/10/14 14:09
+ * @author hu.wen.qi
+ * @Date 2025/5/4
  * @className: HBaseTable
  * @description HBaseTable
  */

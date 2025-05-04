@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Felix
- * @date 2024/6/09
+ * @Author hu.wen.qi
+ * @date 2024/5/4
  * 分词工具类
  */
 public class KeywordUtil {

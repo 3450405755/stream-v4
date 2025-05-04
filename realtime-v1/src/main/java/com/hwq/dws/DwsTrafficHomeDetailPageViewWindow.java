@@ -34,7 +34,7 @@ import org.apache.flink.util.Collector;
 /**
  * @Package com.hwq.dws.DwsTrafficHomeDetailPageViewWindow
  * @Author hu.wen.qi
- * @Date 2025/4/16 11:47
+ * @Date 2025/5/4
  * @description: 1
  */
 @SuppressWarnings("RedundantSuppression")

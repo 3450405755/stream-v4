@@ -38,11 +38,11 @@ import java.math.BigDecimal;
 /**
  * @Package com.hwq.dws.DwsTradeSkuOrderWindow
  * @Author hu.wen.qi
- * @Date 2025/4/16 13:51
+ * @Date 2025/5/4
  * @description: 1
  * /**
- *  @author Felix
- *  @date 2024/6/12
+ * @Author hu.wen.qi
+ *  @date 2025/5/4
  *  sku粒度下单业务过程聚合统计
  *       维度：sku
  *       度量：原始金额、优惠券减免金额、活动减免金额、实付金额

@@ -9,9 +9,9 @@ import java.util.Properties;
 
 /**
  * 配置文件工具类
- * time: 2021/8/11 9:48 className: ConfigUtils.java
+ * time: 2025/5/4 9:48 className: ConfigUtils.java
  *
- * @author han.zhou
+ * @Author hu.wen.qi
  * @version 1.0.0
  */
 public final class ConfigUtils {

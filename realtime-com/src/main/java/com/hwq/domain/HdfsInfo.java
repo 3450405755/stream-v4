@@ -3,8 +3,8 @@ package com.hwq.domain;
 import java.io.Serializable;
 
 /**
- * @author han.zhou
- * @time: 2023/9/14 18:03
+ * @author hu.wen.qi
+ * @Date 2025/5/4
  * @className: HdfsInfo
  * @description 封装HDFS信息 Bean
  */

@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author han.zhou
+ * @Author hu.wen.qi
  **/
 public class HdfsUtils {
 

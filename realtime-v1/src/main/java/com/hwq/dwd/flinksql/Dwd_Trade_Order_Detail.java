@@ -10,9 +10,9 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import java.time.Duration;
 
 /**
- * @Package com.zsf.retail.v1.realtime.dwd.DwdTradeOrderDetail
- * @Author zhao.shuai.fei
- * @Date 2025/4/10 19:34
+ * @Package com.hwq.retail.v1.realtime.dwd.DwdTradeOrderDetail
+ * @Author hu.wen.qi
+ * @Date 2025/5/4
  * @description:下单事实表
  */
 public class Dwd_Trade_Order_Detail {

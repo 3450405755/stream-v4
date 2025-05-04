@@ -37,8 +37,8 @@ import java.util.Properties;
 
 /**
  * @Package com.zsf.retail.v1.realtime.dim.kafka_to_hbase
- * @Author zhao.shuai.fei
- * @Date 2025/4/8 9:28
+ * @Author hu.wen.qi
+ * @Date 2025/5/4
  * @description:
  */
 public class dim_kafka_to_hbase {

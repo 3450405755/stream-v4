@@ -19,8 +19,8 @@ import java.util.Properties;
 
 /**
  * @Package com.stream.FlinkSinktoDorisTest
- * @Author zhou.han
- * @Date 2024/12/16 13:44
+ * @Author hu.wen.qi
+ * @Date 2025/5/4 13:44
  * @description: Test
  */
 public class FlinkSink2DorisTest {

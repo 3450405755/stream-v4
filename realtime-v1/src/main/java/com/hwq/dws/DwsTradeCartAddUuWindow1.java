@@ -32,7 +32,7 @@ import org.apache.flink.util.Collector;
 /**
  * @Package 加购
  * @Author hu.wen.qi
- * @Date 2025/4/16 15:01
+ * @Date 2025/5/4
  * @description: 1
  *
  */

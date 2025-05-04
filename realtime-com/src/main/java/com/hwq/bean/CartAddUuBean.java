@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 /**
- * @author Felix
- * @date 2024/6/11
- */
+ * @author hu.wen.qi
+ * @Date 2025/5/4
+ * */
 @Data
 @AllArgsConstructor
 public class CartAddUuBean {

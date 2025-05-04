@@ -8,9 +8,9 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 /**
- * @Package com.zsf.retail.v1.realtime.dwd.DwdTradeOrderRefund
- * @Author zhao.shuai.fei
- * @Date 2025/4/11 9:04
+ * @Package com.hwq.retail.v1.realtime.dwd.DwdTradeOrderRefund
+ * @Author hu.wen.qi
+ * @Date 2025/5/4
  * @description: 退款事务表
  */
 public class Dwd_Trade_Order_Refund {

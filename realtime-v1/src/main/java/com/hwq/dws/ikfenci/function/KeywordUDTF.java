@@ -7,8 +7,8 @@ import org.apache.flink.table.functions.TableFunction;
 import org.apache.flink.types.Row;
 
 /**
- * @author Felix
- * @date 2024/6/10
+ * @Author hu.wen.qi
+ * @date 2025/5/4
  * 自定义UDTF函数
  */
 @FunctionHint(output = @DataTypeHint("ROW<word STRING>"))

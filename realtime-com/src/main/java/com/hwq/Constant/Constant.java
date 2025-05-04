@@ -3,7 +3,7 @@ package com.hwq.Constant;
 /**
  * @Package com.hwq.Constant.Constant
  * @Author hu.wen.qi
- * @Date 2025/4/9 15:46
+ * @Date 2025/5/4
  * @description: 1
  */
 public class Constant {

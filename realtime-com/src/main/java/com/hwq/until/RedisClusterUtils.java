@@ -6,8 +6,8 @@ import redis.clients.jedis.params.SetParams;
 import java.util.HashSet;
 
 /**
- * @author yongsheng.zhu
- * @date 2023/11/14
+ * @Author hu.wen.qi
+ * @date 2025/5/4
  * @time 11:07
  * RedisClusterCon
  */

@@ -10,8 +10,8 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 /**
- * @author Felix
- * @date 2024/6/10
+ * @Author hu.wen.qi
+ * @date 2024/5/4
  * 搜索关键词聚合统计
  * 需要启动的进程
  *      zk、kafka、flume、doris、DwdBaseLog、DwsTrafficSourceKeywordPageViewWindow

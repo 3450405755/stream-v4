@@ -5,8 +5,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
  * @Package com.stream.common.utils.FlinkEnvUtils
- * @Author zhou.han
- * @Date 2024/10/12 09:25
+ * @Author hu.wen.qi
+ * @Date 2025/5/4 09:25
  * @description: Get Env
  */
 public class FlinkEnvUtils {

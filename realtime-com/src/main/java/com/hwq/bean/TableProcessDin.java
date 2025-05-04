@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  * @Package com.hwq.bean.TableProcessDin
  * @Author hu.wen.qi
- * @Date 2025/4/8 15:24
+ * @Date 2025/5/4
  * @description: 1
  */
 public class TableProcessDin {

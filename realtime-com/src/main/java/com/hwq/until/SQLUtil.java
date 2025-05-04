@@ -3,8 +3,8 @@ package com.hwq.until;
 import com.hwq.Constant.Constant;
 
 /**
- * @author Felix
- * @date 2024/6/04
+ * @Author hu.wen.qi
+ * @date 2025/5/4
  * FlinkSQL操作的工具类
  */
 public class SQLUtil {

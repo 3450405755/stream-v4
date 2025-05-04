@@ -8,7 +8,7 @@ import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 /**
  * @Package 加购事实表
  * @Author hu.wen.qi
- * @Date 2025/4/11 15:25
+ * @Date 2025/5/4 15:25
  * @description: 1
  */
 public class DWD_Trade_Cart_Add_Jg {

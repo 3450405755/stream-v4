@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author han.zhou
- * @date 2022-01-12 10:06
+ * @Author hu.wen.qi
+ * @date 2025-05-4 10:06
  **/
 public class HashModUtil {
 
