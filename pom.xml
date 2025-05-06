@@ -17,7 +17,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <flink.version>1.17.1</flink.version>
+        <flink.version>1.17.2</flink.version>
         <java.version>1.8</java.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -253,33 +253,33 @@
             </dependency>
 
             <!-- parquet 文件格式相关依赖 开始 -->
-            <!--            <dependency>-->
-            <!--                <groupId>org.apache.parquet</groupId>-->
-            <!--                <artifactId>parquet-avro</artifactId>-->
-            <!--                <version>1.10.0</version>-->
-            <!--            </dependency>-->
+                        <dependency>
+                            <groupId>org.apache.parquet</groupId>
+                            <artifactId>parquet-avro</artifactId>
+                            <version>1.10.0</version>
+                        </dependency>
 
-            <!--            <dependency>-->
-            <!--                <groupId>org.apache.parquet</groupId>-->
-            <!--                <artifactId>parquet-hadoop</artifactId>-->
-            <!--                <version>1.10.0</version>-->
-            <!--            </dependency>-->
+                        <dependency>
+                            <groupId>org.apache.parquet</groupId>
+                            <artifactId>parquet-hadoop</artifactId>
+                            <version>1.10.0</version>
+                        </dependency>
 
-            <!--            <dependency>-->
-            <!--                <groupId>org.apache.flink</groupId>-->
-            <!--                <artifactId>flink-parquet</artifactId>-->
-            <!--                <version>1.8.0</version>-->
-            <!--            </dependency>-->
-            <!--            &lt;!&ndash; parquet 文件格式相关依赖 结束 &ndash;&gt;-->
+                        <dependency>
+                            <groupId>org.apache.flink</groupId>
+                            <artifactId>flink-parquet</artifactId>
+                            <version>1.8.0</version>
+                        </dependency>
+                        <!-- parquet 文件格式相关依赖 结束 -->
 
-            <!--            &lt;!&ndash; mysql 相关依赖 开始 &ndash;&gt;-->
+                        <!-- mysql 相关依赖 开始 -->
 
 
-            <!--            <dependency>-->
-            <!--                <groupId>commons-dbutils</groupId>-->
-            <!--                <artifactId>commons-dbutils</artifactId>-->
-            <!--                <version>1.7</version>-->
-            <!--            </dependency>-->
+                        <dependency>
+                            <groupId>commons-dbutils</groupId>
+                            <artifactId>commons-dbutils</artifactId>
+                            <version>1.7</version>
+                        </dependency>
 
             <!-- mysql 相关依赖 结束 -->
         </dependencies>

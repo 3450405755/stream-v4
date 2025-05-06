@@ -184,7 +184,7 @@ public class DwsTradeSkuOrderWindow {
                     String splitCouponAmount = lastJsonObj.getString("split_coupon_amount");
                     String splitActivityAmount = lastJsonObj.getString("split_activity_amount");
                     String splitTotalAmount = lastJsonObj.getString("split_total_amount");
-
+                    //存放
                     lastJsonObj.put("split_original_amount", "-" + splitOriginalAmount);
                     lastJsonObj.put("split_coupon_amount", "-" + splitCouponAmount);
                     lastJsonObj.put("split_activity_amount", "-" + splitActivityAmount);
@@ -225,6 +225,7 @@ public class DwsTradeSkuOrderWindow {
                 BigDecimal splitCouponAmount = jsonObject.getBigDecimal("split_coupon_amount");
                 BigDecimal splitActivityAmount = jsonObject.getBigDecimal("split_activity_amount");
                 BigDecimal splitTotalAmount = jsonObject.getBigDecimal("split_total_amount");
+                //时间转换
                 Long ts = jsonObject.getLong("ts_ms") * 1000;
                 return TradeSkuOrderBean.builder()
                         .skuId(skuId)

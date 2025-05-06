@@ -86,7 +86,7 @@ public class DwsTradeCartAddUuWindow1 {
                     public void open(Configuration parameters) {
                         ValueStateDescriptor<String> valueStateDescriptor
                                 = new ValueStateDescriptor<String>("lastCartDateState", String.class);
-                       // valueStateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(1)).build());
+                        valueStateDescriptor.enableTimeToLive(StateTtlConfig.newBuilder(Time.seconds(1)).build());
                         lastCartDateState = getRuntimeContext().getState(valueStateDescriptor);
                     }
 

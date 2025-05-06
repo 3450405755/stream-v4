@@ -84,6 +84,7 @@ public class DwsTradeCartAddUuWindow {
 
                     @Override
                     public void open(Configuration parameters) {
+                        //状态
                         ValueStateDescriptor<String> value1 = new ValueStateDescriptor<>("state", String.class);
                         state = getRuntimeContext().getState(value1);
                     }
