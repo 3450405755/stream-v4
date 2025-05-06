@@ -6,6 +6,7 @@ import lombok.Data;
 /**
  * @author hu.wen.qi
  * @Date 2025/5/4
+ * 用户独立访问数
  * */
 @Data
 @AllArgsConstructor

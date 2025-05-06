@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 /**
  * @author hu.wen.qi
  * @Date 2025/5/4
+ * 商品粒度
  */
 @Data
 @AllArgsConstructor
