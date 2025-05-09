@@ -152,6 +152,7 @@ public class DwsTradeSkuOrderWindow {
             @Override
             public void processElement(String s, ProcessFunction<String, JSONObject>.Context context, Collector<JSONObject> collector) {
                 if (s != null) {
+                    //收集
                     collector.collect(JSON.parseObject(s));
                 }
             }
@@ -178,6 +179,7 @@ public class DwsTradeSkuOrderWindow {
 
                 //从状态中获取上次接收到的数据
                 JSONObject lastJsonObj = state.value();
+                //判断是否为空
                 if (lastJsonObj != null) {
                     //说明重复了 ，将已经发送到下游的数据(状态)，影响到度量值的字段进行取反再传递到下游
                     String splitOriginalAmount = lastJsonObj.getString("split_original_amount");
@@ -243,7 +245,7 @@ public class DwsTradeSkuOrderWindow {
         //TODO 6.分组
         KeyedStream<TradeSkuOrderBean, String> skuIdKeyedDS = beanDs.keyBy(TradeSkuOrderBean::getSkuId);
 
-        //TODO 7.开窗
+        //TODO 7.开窗 10s窗口
         WindowedStream<TradeSkuOrderBean, String, TimeWindow> windowDS =
                 skuIdKeyedDS.window(TumblingProcessingTimeWindows.of(org.apache.flink.streaming.api.windowing.time.Time.seconds(10)));
 

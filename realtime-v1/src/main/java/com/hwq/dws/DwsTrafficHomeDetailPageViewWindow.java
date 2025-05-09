@@ -65,6 +65,7 @@ public class DwsTrafficHomeDetailPageViewWindow {
             @Override
             public boolean filter(JSONObject jsonObject) {
                 String pageId = jsonObject.getJSONObject("page").getString("page_id");
+                //pageid是否包含home和good_detail
                 return "home".equals(pageId) || "good_detail".equals(pageId);
             }
         });
@@ -136,7 +137,7 @@ public class DwsTrafficHomeDetailPageViewWindow {
                 }
         );
         //beanDS.print();
-        //TODO 6.开窗
+        //TODO 6.开窗 10s窗口
         AllWindowedStream<TrafficHomeDetailPageViewBean, TimeWindow> windowDS = beanDS.windowAll(TumblingEventTimeWindows.of(org.apache.flink.streaming.api.windowing.time.Time.seconds(10)));
         //TODO 7.聚合
         SingleOutputStreamOperator<TrafficHomeDetailPageViewBean> reduceDS = windowDS.reduce(

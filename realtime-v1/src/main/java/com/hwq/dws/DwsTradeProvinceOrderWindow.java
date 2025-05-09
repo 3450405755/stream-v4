@@ -191,11 +191,13 @@ public class DwsTradeProvinceOrderWindow {
 
             @Override
             public void open(Configuration parameters) throws Exception {
+                //hbase连接
                 hbaseConn = HBaseUtil.getHBaseConnection();
             }
 
             @Override
             public void close() throws Exception {
+                //关闭hbase连接
                 HBaseUtil.closeHBaseConnection(hbaseConn);
             }
 
