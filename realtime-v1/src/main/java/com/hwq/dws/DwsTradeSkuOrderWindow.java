@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.hwq.Constant.Constant;
 import com.hwq.bean.TradeSkuOrderBean;
 import com.hwq.until.DateFormatUtil;
+import com.hwq.until.DimAsync;
 import com.hwq.until.HBaseUtil;
 import com.hwq.until.KafkaUtil;
 import lombok.SneakyThrows;
@@ -19,14 +20,12 @@ import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.CheckpointingMode;
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
-import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
-import org.apache.flink.streaming.api.datastream.WindowedStream;
+import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.streaming.api.functions.async.AsyncFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
@@ -34,6 +33,8 @@ import org.apache.flink.util.Collector;
 import org.apache.hadoop.hbase.client.Connection;
 
 import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Package com.hwq.dws.DwsTradeSkuOrderWindow
@@ -227,6 +228,7 @@ public class DwsTradeSkuOrderWindow {
                 BigDecimal splitCouponAmount = jsonObject.getBigDecimal("split_coupon_amount");
                 BigDecimal splitActivityAmount = jsonObject.getBigDecimal("split_activity_amount");
                 BigDecimal splitTotalAmount = jsonObject.getBigDecimal("split_total_amount");
+                String userId = jsonObject.getString("user_id");
                 //时间转换
                 Long ts = jsonObject.getLong("ts_ms") * 1000;
                 return TradeSkuOrderBean.builder()
@@ -235,6 +237,7 @@ public class DwsTradeSkuOrderWindow {
                         .couponReduceAmount(splitCouponAmount)
                         .activityReduceAmount(splitActivityAmount)
                         .orderAmount(splitTotalAmount)
+                        .userId(userId)
                         .ts(ts)
                         .build();
             }
@@ -305,6 +308,7 @@ public class DwsTradeSkuOrderWindow {
                             orderBean.setSpuId(skuInfoJsonObj.getString("spu_id"));
                             orderBean.setCategory3Id(skuInfoJsonObj.getString("category3_id"));
                             orderBean.setTrademarkId(skuInfoJsonObj.getString("tm_id"));
+
                         }
                         return orderBean;
                     }
@@ -472,10 +476,47 @@ public class DwsTradeSkuOrderWindow {
                         return tradeSkuOrderBean;
                     }
                 });
+
+
+
         //withCategory1foDS.print();
 
+
+
+        SingleOutputStreamOperator<TradeSkuOrderBean> withCategoryfoDS1 = withCategory1foDS.map(
+                new RichMapFunction<TradeSkuOrderBean, TradeSkuOrderBean>() {
+                    private Connection hbaseConn;
+
+                    @Override
+                    public void open(Configuration parameters) throws Exception {
+                        hbaseConn = HBaseUtil.getHBaseConnection();
+                    }
+
+                    @Override
+                    public void close() throws Exception {
+                        HBaseUtil.closeHBaseConnection(hbaseConn);
+                    }
+
+                    @Override
+                    public TradeSkuOrderBean map(TradeSkuOrderBean tradeSkuOrderBean) {
+                        //根据流中的对象获取要关联的维度的主键
+                        String userId = tradeSkuOrderBean.getUserId();
+                        //根据维度的主键到Hbase维度表中获取对应的维度对象
+                        //id,spu_id,price,sku_name,sku_desc,weight,tm_id,category3_id,sku_default_img,is_sale,create_time
+                        JSONObject dimUserInfo = HBaseUtil.getRow(hbaseConn, Constant.HBASE_NAMESPACE, "dim_user_info", userId, JSONObject.class);
+                        //将维度对象相关的维度属性补充到流中对象上
+                        if (dimUserInfo != null) {
+                            tradeSkuOrderBean.setBirthday(dimUserInfo.getString("birthday"));
+                        }
+                        return tradeSkuOrderBean;
+                    }
+                });
+
+        withCategoryfoDS1.print();
+
+
         SingleOutputStreamOperator<String> map = withCategory1foDS.map(JSON::toJSONString);
-        map.print();
+        //map.print();
       // map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_sku_order_window"));
 
 

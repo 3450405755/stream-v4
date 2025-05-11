@@ -36,6 +36,8 @@ public class TradeSkuOrderBean {
     String category2Id;
     // 二级品类名称
     String category2Name;
+    //评论
+    String appraise;
     // 三级品类 ID
     String category3Id;
     // 三级品类名称
@@ -48,6 +50,10 @@ public class TradeSkuOrderBean {
     String spuId;
     // spu 名称
     String spuName;
+    //用户id
+    String userId;
+    //用户生日
+    String birthday;
     // 原始金额
     BigDecimal originalAmount;
     // 活动减免金额
