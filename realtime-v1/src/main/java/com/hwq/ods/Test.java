@@ -2,6 +2,7 @@ package com.hwq.ods;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hwq.until.KafkaUtil;
 import com.ververica.cdc.connectors.mysql.source.MySqlSource;
 import com.ververica.cdc.connectors.mysql.table.StartupOptions;
 import com.ververica.cdc.debezium.JsonDebeziumDeserializationSchema;
@@ -74,8 +75,8 @@ public class Test {
         // "db":"dev_realtime_v3_wenqi_hu","sequence":null,"table":"order_detail","server_id":1,"gtid":null,"file":"mysql-bin.000002","pos":3825924,"row":0,"thread":null,"query":null},"op":"c","ts_ms":1744091723610,"transaction":null}
          //ds2.print();
 
-       kafka.print();
-      // kafka.addSink(KafkaUtil.getKafkaSink("log_topic"));
+       //kafka.print();
+       kafka.addSink(KafkaUtil.getKafkaSink("log_topic"));
 
 
         //{"before":{"id":2239,"consignee":"窦裕河","consignee_tel":"13248136725","total_amount":13659.0,"order_status":"1001","user_id":122,"payment_way":"3501","delivery_address":null,"order_comment":null,"out_trade_no":"411646696444523","trade_body":"金沙河面条 原味银丝挂面 龙须面 方便速食拉面 清汤面 900g等3件商品","create_time":1744068542000,"operate_time":null,"expire_time":null,"process_status":null,"tracking_no":null,"parent_order_id":null,"img_url":null,"province_id":24,"activity_reduce_amount":250.0,"coupon_reduce_amount":0.0,"original_total_amount":13909.0,"feight_fee":null,"feight_fee_reduce":null,"refundable_time":1744673342000},"after":{"id":2239,"consignee":"窦裕河","consignee_tel":"13248136725","total_amount":13659.0,"order_status":"1002","user_id":122,"payment_way":"3501","delivery_address":null,"order_comment":null,"out_trade_no":"411646696444523","trade_body":"金沙河面条 原味银丝挂面 龙须面 方便速食拉面 清汤面 900g等3件商品","create_time":1744068542000,"operate_time":1744068570000,"expire_time":null,"process_status":null,"tracking_no":null,"parent_order_id":null,"img_url":null,"province_id":24,"activity_reduce_amount":250.0,"coupon_reduce_amount":0.0,"original_total_amount":13909.0,"feight_fee":null,"feight_fee_reduce":null,"refundable_time":1744673342000},"source":{"version":"1.6.4.Final","connector":"mysql","name":"mysql_binlog_source","ts_ms":1744076990000,"snapshot":"false","db":"dev_realtime_v3_wenqi_hu","sequence":null,"table":"order_info","server_id":1,

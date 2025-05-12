@@ -36,8 +36,6 @@ public class TradeSkuOrderBean {
     String category2Id;
     // 二级品类名称
     String category2Name;
-    //评论
-    String appraise;
     // 三级品类 ID
     String category3Id;
     // 三级品类名称

@@ -27,7 +27,6 @@ public class TrafficPageViewBean {
     private String ar;
     // 新老访客状态标记
     private String isNew ;
-
     // 独立访客数
     private Long uvCt;
     // 会话数

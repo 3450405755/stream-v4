@@ -43,9 +43,9 @@ public class FilterBloomDeduplicatorFunc extends RichFilterFunction<JSONObject> 
 
     @Override
     public boolean filter(JSONObject value) throws Exception {
-        long orderId = value.getLong("order_id");
+        String userId = value.getString("user_id");
         long tsMs = value.getLong("ts_ms");
-        String compositeKey = orderId + "_" + tsMs;
+        String compositeKey = userId + "_" + tsMs;
 
         // 读取状态
         byte[] bitArray = bloomState.value();

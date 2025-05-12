@@ -1,13 +1,20 @@
 package com.hwq.dws.ikfenci.app;
 
 
+import com.alibaba.fastjson2.JSONObject;
 import com.hwq.dws.ikfenci.function.KeywordUDTF;
+import com.hwq.until.KafkaUtil;
 import lombok.SneakyThrows;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.CheckpointingMode;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.apache.flink.types.Row;
+
+import java.util.List;
 
 /**
  * @Author hu.wen.qi
@@ -59,30 +66,59 @@ public class DwsTrafficSourceKeywordPageViewWindow {
         //TODO 过滤出搜索行为
         Table searchTable = tEnv.sqlQuery("select \n" +
                 "   page['item']  fullword,\n" +
+                "   common['ba']  ba,\n" +
+                "   common['uid']  uid,\n" +
+                "   common['os']  os,\n" +
+                "   common['vc']  vc,\n" +
+                "   common['md']  md,\n" +
+                "   ts ,\n" +
                 "   time_ltz\n" +
                 "from page_log\n" +
                 "where page['last_page_id'] = 'search' and page['item_type'] ='keyword' and page['item'] is not null");
-        //searchTable.execute().print();
+           //searchTable.execute().print();
 
         tEnv.createTemporaryView("search_table",searchTable);
         //TODO 调用自定义函数完成分词   并和原表的其它字段进行join
-        Table splitTable = tEnv.sqlQuery("SELECT keyword,time_ltz FROM search_table,\n" +
+        Table splitTable = tEnv.sqlQuery("SELECT keyword,time_ltz,ba,uid,os,vc,md,ts FROM search_table,\n" +
                 "LATERAL TABLE(ik_analyze(fullword)) t(keyword)");
         tEnv.createTemporaryView("split_table",splitTable);
-        //tEnv.executeSql("select * from split_table").print();
+     // tEnv.executeSql("select * from split_table").print();
         //TODO 分组、开窗、聚合
         Table resTable = tEnv.sqlQuery("SELECT \n" +
                 "     date_format(window_start, 'yyyy-MM-dd HH:mm:ss') stt,\n" +
                 "     date_format(window_end, 'yyyy-MM-dd HH:mm:ss') edt,\n" +
-                "     date_format(window_start, 'yyyy-MM-dd') cur_date,\n" +
+                "     ba ,\n" +
+                "     uid,\n" +
+                "     os,\n" +
+                "     vc,\n" +
+                "     md,\n" +
+                "     ts,\n" +
                 "     keyword,\n" +
                 "     count(*) keyword_count\n" +
                 "  FROM TABLE(\n" +
                 "    TUMBLE(TABLE split_table, DESCRIPTOR(time_ltz), INTERVAL '10' second))\n" +
-                "  GROUP BY window_start, window_end,keyword");
-        resTable.execute().print();
+                "  GROUP BY window_start, window_end,keyword,ba,uid,os,vc,md,ts");
+        //resTable.execute().print();
         //TODO 将聚合的结果写到Doris中
 
+        //转流
+        List<String> names = resTable.getResolvedSchema().getColumnNames();
+
+        SingleOutputStreamOperator<String> jsonDs = tEnv.toChangelogStream(resTable)
+                .map(new MapFunction<Row, String>() {
+                    @Override
+                    public String map(Row row) throws Exception {
+
+                        JSONObject object = new JSONObject();
+                        for (int i = 0; i < row.getArity(); i++) {
+                            object.put(names.get(i), row.getField(i));
+                        }
+                        return object.toJSONString();
+                    }
+                });
+
+        jsonDs.print();
+       //jsonDs.addSink(KafkaUtil.getKafkaSink("search_term"));
 
 
 //
@@ -107,10 +143,6 @@ public class DwsTrafficSourceKeywordPageViewWindow {
 //        resTable.executeInsert("dws_trafficVcChAr_isNew_pageViewWindow");
 
 
-
-
-
-
-//        env.execute();
+        env.execute();
     }
 }

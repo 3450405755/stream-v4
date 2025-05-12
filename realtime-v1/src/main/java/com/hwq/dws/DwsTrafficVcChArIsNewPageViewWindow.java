@@ -2,8 +2,11 @@ package com.hwq.dws;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hwq.Constant.Constant;
+import com.hwq.bean.TradeSkuOrderBean;
 import com.hwq.bean.TrafficPageViewBean;
 import com.hwq.until.DateFormatUtil;
+import com.hwq.until.HBaseUtil;
 import com.hwq.until.KafkaUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +32,7 @@ import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.apache.hadoop.hbase.client.Connection;
 
 /**
  * @Package com.hwq.dws.DwsTrafficVcChArIsNewPageViewWindow
@@ -182,6 +186,9 @@ public class DwsTrafficVcChArIsNewPageViewWindow {
                 }
         );
        //reduceDS.print();
+
+
+
 
 
         SingleOutputStreamOperator<String> map = reduceDS.map(JSON::toJSONString);
