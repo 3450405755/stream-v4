@@ -281,7 +281,7 @@ public class DwsTradeSkuOrderWindow {
 
         //reduceDS.print();
         //异步IO + 模板
-        SingleOutputStreamOperator<TradeSkuOrderBean> withSkuInfoDS = reduceDS.map(
+        SingleOutputStreamOperator<TradeSkuOrderBean> withSkuInfoDS = skuIdKeyedDS.map(
                 new RichMapFunction<TradeSkuOrderBean, TradeSkuOrderBean>() {
                     private Connection hbaseConn;
 
@@ -512,11 +512,11 @@ public class DwsTradeSkuOrderWindow {
                     }
                 });
 
-        withCategoryfoDS1.print();
+        //withCategoryfoDS1.print();
 
 
         SingleOutputStreamOperator<String> map = withCategory1foDS.map(JSON::toJSONString);
-        //map.print();
+        map.print();
       // map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_sku_order_window"));
 
 
