@@ -37,7 +37,7 @@ public abstract class DimAsync<T> extends RichAsyncFunction<T,T> implements DimJ
         CompletableFuture.supplyAsync(()->{
             //通过抽象方法获取rowKey
             String rowKey = getRowKey(data);
-            JSONObject dimAsync = HBaseUtil.readDimAsync(hbaseCon, "dim_zrb_online_v1", getTableName(), rowKey);
+            JSONObject dimAsync = HBaseUtil.readDimAsync(hbaseCon, "dim_to_hbases", getTableName(), rowKey);
 //            System.out.println("aaaaaaaaaa"+dimAsync);
             return dimAsync;
         }).thenAccept(dimAsync -> {

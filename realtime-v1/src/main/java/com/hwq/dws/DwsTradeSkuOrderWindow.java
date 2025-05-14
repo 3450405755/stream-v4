@@ -1,5 +1,6 @@
 package com.hwq.dws;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hwq.Constant.Constant;
@@ -33,6 +34,8 @@ import org.apache.flink.util.Collector;
 import org.apache.hadoop.hbase.client.Connection;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -224,6 +227,7 @@ public class DwsTradeSkuOrderWindow {
                 // "activity_id":"4","sku_name":"TCL","id":"15183","order_id":"10788","split_activity_amount":"1199.9",
                 // "split_total_amount":"10799.1","ts":1718160880}
                 String skuId = jsonObject.getString("sku_id");
+                String createTime = jsonObject.getString("create_time");
                 BigDecimal splitOriginalAmount = jsonObject.getBigDecimal("split_original_amount");
                 BigDecimal splitCouponAmount = jsonObject.getBigDecimal("split_coupon_amount");
                 BigDecimal splitActivityAmount = jsonObject.getBigDecimal("split_activity_amount");
@@ -237,13 +241,14 @@ public class DwsTradeSkuOrderWindow {
                         .couponReduceAmount(splitCouponAmount)
                         .activityReduceAmount(splitActivityAmount)
                         .orderAmount(splitTotalAmount)
+                        .createTime(createTime)
                         .userId(userId)
                         .ts(ts)
                         .build();
             }
         });
 
-        //beanDs.print();
+
 
         //TODO 6.分组
         KeyedStream<TradeSkuOrderBean, String> skuIdKeyedDS = beanDs.keyBy(TradeSkuOrderBean::getSkuId);
@@ -279,9 +284,9 @@ public class DwsTradeSkuOrderWindow {
                 }
         );
 
-        //reduceDS.print();
+      // reduceDS.print();
         //异步IO + 模板
-        SingleOutputStreamOperator<TradeSkuOrderBean> withSkuInfoDS = skuIdKeyedDS.map(
+        SingleOutputStreamOperator<TradeSkuOrderBean> withSkuInfoDS = reduceDS.map(
                 new RichMapFunction<TradeSkuOrderBean, TradeSkuOrderBean>() {
                     private Connection hbaseConn;
 
@@ -514,9 +519,13 @@ public class DwsTradeSkuOrderWindow {
 
         //withCategoryfoDS1.print();
 
+//        withCategoryfoDS1
+//                .map(JSON::toJSONString)
+//                .addSink(KafkaUtil.getKafkaSink("trade_sku_order_window"));
+
 
         SingleOutputStreamOperator<String> map = withCategory1foDS.map(JSON::toJSONString);
-        map.print();
+        //map.print();
       // map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_sku_order_window"));
 
 

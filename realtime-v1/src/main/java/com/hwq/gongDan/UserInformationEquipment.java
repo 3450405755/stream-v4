@@ -2,42 +2,39 @@ package com.hwq.gongDan;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.hwq.dws.ikfenci.function.FlinkWorkOrderFuc;
+import com.hwq.dws.ikfenci.function.DimBaseCategory;
 import com.hwq.dws.ikfenci.function.IntervalJoinUserInfoLabelProcessFunc;
-import com.hwq.fuction.FilterBloomDeduplicatorFunc;
+import com.hwq.dws.ikfenci.function.MapDeviceAndSearchMarkModelFunc;
+import com.hwq.fuction.AggregateUserDataProcessFunction;
+import com.hwq.fuction.AggregateUserDataProcessFunction1;
+import com.hwq.fuction.ProcessFilterRepeatTsData;
+import com.hwq.until.DateFormatUtil;
+import com.hwq.until.JdbcUtils;
 import com.hwq.until.KafkaUtil;
 import lombok.SneakyThrows;
-import org.apache.commons.math3.fitting.leastsquares.EvaluationRmsChecker;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichMapFunction;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.functions.co.ProcessJoinFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.util.Collector;
-import org.checkerframework.checker.units.qual.K;
-import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 
-
+import java.sql.Connection;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 /**
  * @Package com.hwq.gongDan.FlinkWorkOrder
@@ -45,7 +42,34 @@ import java.time.format.DateTimeFormatter;
  * @Date 2025/5/12 9:30
  * @description: 1
  */
-public class FlinkWorkOrder {
+public class UserInformationEquipment {
+
+    private static final List<DimBaseCategory> dim_base_categories;
+    private static final Connection connection;
+
+    private static final double device_rate_weight_coefficient = 0.1; // 设备权重系数
+    private static final double search_rate_weight_coefficient = 0.15; // 搜索权重系数
+
+    static {
+        try {
+            connection = JdbcUtils.getMySQLConnection(
+                    "jdbc:mysql://cdh03:3306",
+                   "root",
+                    "root");
+            String sql = "select b3.id,                          \n" +
+                    "            b3.name as b3name,              \n" +
+                    "            b2.name as b2name,              \n" +
+                    "            b1.name as b1name               \n" +
+                    "     from dev_realtime_v6_wenqi_hu.base_category3 as b3  \n" +
+                    "     join dev_realtime_v6_wenqi_hu.base_category2 as b2  \n" +
+                    "     on b3.category2_id = b2.id             \n" +
+                    "     join dev_realtime_v6_wenqi_hu.base_category1 as b1  \n" +
+                    "     on b2.category1_id = b1.id";
+            dim_base_categories = JdbcUtils.queryList2(connection, sql, DimBaseCategory.class, false);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
     @SneakyThrows
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -53,10 +77,40 @@ public class FlinkWorkOrder {
 
         DataStreamSource<String> kafkaSource = KafkaUtil.getKafkaSource(env, "log_topic", "as");
 
-        //{"stt":"2025-05-11 23:05:50","edt":"2025-05-11 23:06:00","ba":"iPhone","os":"iOS 13.2.9","vc":"v2.1.134","md":"iPhone 14 Plus","ts":1746975956840,"keyword":"衬衫","keyword_count":1}
         DataStream<String> kafka_source_log = KafkaUtil.getKafkaSource(env, "topic_log", "aa");
 
+        DataStream<String> kafka_sku_order_window = KafkaUtil.getKafkaSource(env, "trade_sku_order_window", "ad");
 
+        //TODO 订单
+        SingleOutputStreamOperator<String> order_filter = kafka_sku_order_window.filter(new FilterFunction<String>() {
+            @Override
+            public boolean filter(String s) throws Exception {
+                boolean b = JSON.isValid(s);
+                if (b == false) {
+                    return false;
+                }
+                String userId = JSON.parseObject(s).getString("userid");
+                if (userId != null) {
+                    return false;
+                }
+                return true;
+            }
+        });
+
+        SingleOutputStreamOperator<JSONObject> order_json = order_filter.map(JSON::parseObject);
+
+        SingleOutputStreamOperator<JSONObject> order_water = order_json.assignTimestampsAndWatermarks(WatermarkStrategy.<JSONObject>forMonotonousTimestamps().withTimestampAssigner(new SerializableTimestampAssigner<JSONObject>() {
+            @Override
+            public long extractTimestamp(JSONObject jsonObject, long l) {
+                return DateFormatUtil.dateTimeToTs(jsonObject.getString("stt"));
+            }
+        }));
+
+        KeyedStream<JSONObject, String> order_key = order_water.keyBy(jsonObject -> jsonObject.getString("userId"));
+        SingleOutputStreamOperator<JSONObject> order_fil = order_key.filter(jsonObject -> !jsonObject.getString("userId").isEmpty() && jsonObject.containsKey("userId"));
+
+
+        //TODO 日志搜索词
         SingleOutputStreamOperator<String> filter = kafka_source_log.filter(new FilterFunction<String>() {
             @Override
             public boolean filter(String s) throws Exception {
@@ -110,29 +164,27 @@ public class FlinkWorkOrder {
             }
         });
 
-        log_sou.keyBy(jsonObject -> jsonObject.getString("uid"))
-        .process(new ProcessFunction<JSONObject, JSONObject>() {
-            ValueState<JSONObject> state;
-            @Override
-            public void open(Configuration parameters) throws Exception {
-                ValueStateDescriptor<JSONObject> value1 = new ValueStateDescriptor<>("state", JSONObject.class);
-                state = getRuntimeContext().getState(value1);
-            }
 
-            @Override
-            public void processElement(JSONObject value, ProcessFunction<JSONObject, JSONObject>.Context ctx, Collector<JSONObject> out) throws Exception {
-                JSONObject jsonObject = state.value();
-                if (jsonObject != null) {
-                  state.update(value);
-                }
-                state.update(value);
-                out.collect(value);
-            }
-        }).print();
+        SingleOutputStreamOperator<JSONObject> filterNotNullUidLogPageMsg = log_sou.filter(jsonObject -> !jsonObject.getString("uid").isEmpty());
+        KeyedStream<JSONObject, String> keyedStreamLogPageMsg = filterNotNullUidLogPageMsg.keyBy(jsonObject -> jsonObject.getString("uid"));
 
+        //去重
+        SingleOutputStreamOperator<JSONObject> log_distisct = keyedStreamLogPageMsg.process(new ProcessFilterRepeatTsData());
 
+        // 2 min 分钟窗口
+        SingleOutputStreamOperator<JSONObject> win2MinutesPageLogsDs = log_distisct.keyBy(data -> data.getString("uid"))
+                //使用AggregateUserDataProcessFunction统计每个用户的PV、设备信息和搜索关键词
+                .process(new AggregateUserDataProcessFunction())
+                .keyBy(data -> data.getString("uid"))
+                .window(TumblingProcessingTimeWindows.of(Time.seconds(2)))
+                //    对窗口内的数据进行规约，保留最后一条记录（丢弃其他记录）
+                //    这里使用lambda表达式 (value1, value2) -> value2 表示只保留第二个值（即最后一条记录）
+                .reduce((value1, value2) -> value2);
 
+        //TODO 设备打分模型
+        SingleOutputStreamOperator<JSONObject> word_equipment = win2MinutesPageLogsDs.map(new MapDeviceAndSearchMarkModelFunc(dim_base_categories, device_rate_weight_coefficient, search_rate_weight_coefficient));
 
+       // word_equipment.print();
 
 
 
@@ -140,6 +192,7 @@ public class FlinkWorkOrder {
 
 
 
+        //TODO 用户与用户体重身高
         SingleOutputStreamOperator<String> kafka_filter = kafkaSource.filter(new FilterFunction<String>() {
             @Override
             public boolean filter(String s) throws Exception {
@@ -237,7 +290,6 @@ public class FlinkWorkOrder {
             }
         });
 
-
         SingleOutputStreamOperator<JSONObject> finalUserinfoDs = user_if.filter(data -> data.containsKey("uid") && !data.getString("uid").isEmpty());
         SingleOutputStreamOperator<JSONObject> finalUserinfoSupDs = mapUserInfoSupDs.filter(data -> data.containsKey("uid") && !data.getString("uid").isEmpty());
 
@@ -248,18 +300,84 @@ public class FlinkWorkOrder {
                 .between(Time.minutes(-5), Time.minutes(5))
                 .process(new IntervalJoinUserInfoLabelProcessFunc());
 
-        //processIntervalJoinUserInfo6BaseMessageDs.print();
+
+
+
+
+
+        SingleOutputStreamOperator<JSONObject> user_Information = keyedStreamUserInfoDs
+                .keyBy(jsonObject -> jsonObject.getString("uid"))
+                .intervalJoin(word_equipment.keyBy(jsonObject -> jsonObject.getString("uid")))
+                .between(Time.days(-3), Time.days(3))
+                .process(new ProcessJoinFunction<JSONObject, JSONObject, JSONObject>() {
+                    @Override
+                    public void processElement(JSONObject left, JSONObject right, ProcessJoinFunction<JSONObject, JSONObject, JSONObject>.Context ctx, Collector<JSONObject> out) throws Exception {
+                        left.put("os", right.getString("os"));
+                        left.put("ch", right.getString("ch"));
+                        left.put("pv", right.getString("pv"));
+                        left.put("md", right.getString("md"));
+                        left.put("keyword", right.getString("keyword"));
+                        left.put("ba", right.getString("ba"));
+                        left.put("device_35_39", right.getString("device_35_39"));
+                        left.put("device_50", right.getString("device_50"));
+                        left.put("device_30_34", right.getString("device_30_34"));
+                        left.put("device_18_24", right.getString("device_18_24"));
+                        left.put("device_25_29", right.getString("device_25_29"));
+                        left.put("device_40_49", right.getString("device_40_49"));
+                        left.put("search_25_29", right.getString("search_25_29"));
+                        left.put("search_50", right.getString("search_50"));
+                        left.put("search_40_49", right.getString("search_40_49"));
+                        left.put("search_18_24", right.getString("search_18_24"));
+                        left.put("search_35_39", right.getString("search_35_39"));
+                        left.put("search_30_34", right.getString("search_30_34"));
+                        out.collect(left);
+                    }
+                });
+
+        //user_Information.print();
+
+
+
+        SingleOutputStreamOperator<JSONObject> win2Minutes = user_Information.keyBy(data -> data.getString("uid"))
+                //使用AggregateUserDataProcessFunction统计每个用户的PV、设备信息和搜索关键词
+                .process(new AggregateUserDataProcessFunction1())
+                .keyBy(data -> data.getString("uid"))
+                .window(TumblingProcessingTimeWindows.of(Time.seconds(2)))
+                //    对窗口内的数据进行规约，保留最后一条记录（丢弃其他记录）
+                //    这里使用lambda表达式 (value1, value2) -> value2 表示只保留第二个值（即最后一条记录）
+                .reduce((value1, value2) -> value2);
+
+        win2Minutes.print();
+
+//        win2Minutes
+//                .map(JSON::toJSONString)
+//                .addSink(KafkaUtil.getKafkaSink("win2Minutes"));
+
+
+
+
+
+
+        SingleOutputStreamOperator<JSONObject> user_to_order = user_Information
+                .keyBy(jsonObject -> jsonObject.getString("uid"))
+                .intervalJoin(order_fil.keyBy(jsonObject -> jsonObject.getString("userId")))
+                .between(Time.days(-10), Time.days(10))
+                .process(new ProcessJoinFunction<JSONObject, JSONObject, JSONObject>() {
+                    @Override
+                    public void processElement(JSONObject left, JSONObject right, ProcessJoinFunction<JSONObject, JSONObject, JSONObject>.Context ctx, Collector<JSONObject> out) throws Exception {
+                        left.put("trademarkName", right.getString("trademarkName"));
+                        left.put("orderAmount", right.getString("orderAmount"));
+                        left.put("createTime", right.getString("createTime"));
+                        out.collect(left);
+                    }
+                });
+
+       // user_to_order.print();
 
 
 
         env.execute();
     }
-
-
-
-
-
-
 
 
   private static int calculateAge(LocalDate birthDate, LocalDate currentDate) {

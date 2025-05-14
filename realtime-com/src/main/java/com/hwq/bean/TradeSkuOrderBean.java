@@ -60,6 +60,8 @@ public class TradeSkuOrderBean {
     BigDecimal couponReduceAmount;
     // 下单金额
     BigDecimal orderAmount;
+    //时间
+    String createTime;
     // 时间戳
     @JSONField(serialize = false)
     Long ts;
