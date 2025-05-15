@@ -1,12 +1,10 @@
 package com.hwq.dws.ikfenci.function;
 
 import com.alibaba.fastjson.JSONObject;
-
 import com.hwq.until.ConfigUtils;
 import com.hwq.until.JdbcUtils;
-import com.hwq.dws.ikfenci.function.DimBaseCategory;
+import com.hwq.bean.DimBaseCategory;
 import com.hwq.dws.ikfenci.function.DimCategoryCompare;
-import com.hwq.until.JdbcUtils;
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.configuration.Configuration;
 
@@ -18,8 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Package com.hwq.dws.ikfenci.function
- * @Author hwq.com
+ * @Package com.retailersv1.func.MapDeviceMarkModel
+ * @Author zhou.han
  * @Date 2025/5/13 21:34
  * @description: 设备打分模型
  */
@@ -45,7 +43,7 @@ public class MapDeviceAndSearchMarkModelFunc extends RichMapFunction<JSONObject,
     public void open(Configuration parameters) throws Exception {
         connection = JdbcUtils.getMySQLConnection(
                 "jdbc:mysql://cdh03:3306",
-               "root",
+                "root",
                 "root");
         String sql = "select id, category_name, search_category from dev_realtime_v6_wenqi_hu.category_compare_dic;";
         dimCategoryCompares = JdbcUtils.queryList2(connection, sql, DimCategoryCompare.class, true);
@@ -77,7 +75,7 @@ public class MapDeviceAndSearchMarkModelFunc extends RichMapFunction<JSONObject,
             jsonObject.put("device_50",    round(0.3 * deviceRate));
         }
 
-        String searchItem = jsonObject.getString("keyword");
+        String searchItem = jsonObject.getString("search_item");
         if (searchItem != null && !searchItem.isEmpty()) {
             DimBaseCategory category = categoryMap.get(searchItem);
             if (category != null) {

@@ -2,13 +2,12 @@ package com.hwq.gongDan;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.hwq.dws.ikfenci.function.DimBaseCategory;
 import com.hwq.dws.ikfenci.function.IntervalJoinUserInfoLabelProcessFunc;
 import com.hwq.dws.ikfenci.function.MapDeviceAndSearchMarkModelFunc;
 import com.hwq.fuction.AggregateUserDataProcessFunction;
 import com.hwq.fuction.AggregateUserDataProcessFunction1;
+import com.hwq.bean.DimBaseCategory;
 import com.hwq.fuction.ProcessFilterRepeatTsData;
-import com.hwq.until.DateFormatUtil;
 import com.hwq.until.JdbcUtils;
 import com.hwq.until.KafkaUtil;
 import lombok.SneakyThrows;
@@ -44,18 +43,24 @@ import java.util.List;
  */
 public class UserInformationEquipment {
 
+    // 存储所有维度分类信息的列表
     private static final List<DimBaseCategory> dim_base_categories;
+    // 数据库连接对象（静态共享，整个应用生命周期只创建一次）
     private static final Connection connection;
+    // 设备权重系数（用于后续计算，如用户画像或推荐算法）
 
     private static final double device_rate_weight_coefficient = 0.1; // 设备权重系数
+    // 搜索权重系数（用于后续计算，如搜索结果排序或用户行为分析）
     private static final double search_rate_weight_coefficient = 0.15; // 搜索权重系数
-
+    // 静态代码块，在类加载时执行，初始化数据库连接和维度数据
     static {
         try {
             connection = JdbcUtils.getMySQLConnection(
                     "jdbc:mysql://cdh03:3306",
                    "root",
                     "root");
+            // SQL查询语句：关联三级分类表，获取完整分类层级信息
+            // 包含：三级分类ID、三级分类名称、二级分类名称、一级分类名称
             String sql = "select b3.id,                          \n" +
                     "            b3.name as b3name,              \n" +
                     "            b2.name as b2name,              \n" +
@@ -65,6 +70,8 @@ public class UserInformationEquipment {
                     "     on b3.category2_id = b2.id             \n" +
                     "     join dev_realtime_v6_wenqi_hu.base_category1 as b1  \n" +
                     "     on b2.category1_id = b1.id";
+            // 执行SQL查询，将结果映射到DimBaseCategory类的对象列表中
+            // false参数表示不关闭数据库连接（由静态变量持有，后续复用）
             dim_base_categories = JdbcUtils.queryList2(connection, sql, DimBaseCategory.class, false);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -75,39 +82,7 @@ public class UserInformationEquipment {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        DataStreamSource<String> kafkaSource = KafkaUtil.getKafkaSource(env, "log_topic", "as");
-
         DataStream<String> kafka_source_log = KafkaUtil.getKafkaSource(env, "topic_log", "aa");
-
-        DataStream<String> kafka_sku_order_window = KafkaUtil.getKafkaSource(env, "trade_sku_order_window", "ad");
-
-        //TODO 订单
-        SingleOutputStreamOperator<String> order_filter = kafka_sku_order_window.filter(new FilterFunction<String>() {
-            @Override
-            public boolean filter(String s) throws Exception {
-                boolean b = JSON.isValid(s);
-                if (b == false) {
-                    return false;
-                }
-                String userId = JSON.parseObject(s).getString("userid");
-                if (userId != null) {
-                    return false;
-                }
-                return true;
-            }
-        });
-
-        SingleOutputStreamOperator<JSONObject> order_json = order_filter.map(JSON::parseObject);
-
-        SingleOutputStreamOperator<JSONObject> order_water = order_json.assignTimestampsAndWatermarks(WatermarkStrategy.<JSONObject>forMonotonousTimestamps().withTimestampAssigner(new SerializableTimestampAssigner<JSONObject>() {
-            @Override
-            public long extractTimestamp(JSONObject jsonObject, long l) {
-                return DateFormatUtil.dateTimeToTs(jsonObject.getString("stt"));
-            }
-        }));
-
-        KeyedStream<JSONObject, String> order_key = order_water.keyBy(jsonObject -> jsonObject.getString("userId"));
-        SingleOutputStreamOperator<JSONObject> order_fil = order_key.filter(jsonObject -> !jsonObject.getString("userId").isEmpty() && jsonObject.containsKey("userId"));
 
 
         //TODO 日志搜索词
@@ -190,9 +165,8 @@ public class UserInformationEquipment {
 
 
 
-
-
-        //TODO 用户与用户体重身高
+        //TODO 读取业务层用户与用户体重身高
+        DataStreamSource<String> kafkaSource = KafkaUtil.getKafkaSource(env, "log_topic", "as");
         SingleOutputStreamOperator<String> kafka_filter = kafkaSource.filter(new FilterFunction<String>() {
             @Override
             public boolean filter(String s) throws Exception {
@@ -213,10 +187,14 @@ public class UserInformationEquipment {
             }
         }));
 
+        //TODO 用户信息
         SingleOutputStreamOperator<JSONObject> user_info = filter_water.map(JSON::parseObject)
                 .filter(o -> o.getJSONObject("source").getString("table").equals("user_info"));
+         //TODO 用户身高,体重
+        SingleOutputStreamOperator<JSONObject> user_info_sup_msg = filter_water.map(JSON::parseObject)
+                .filter(o -> o.getJSONObject("source").getString("table").equals("user_info_sup_msg"));
 
-        //将用户的生日19999转换成2001-01-01
+        //例如将用户的生日10000转换成2001-01-01
         SingleOutputStreamOperator<JSONObject> finalUserInfoDs = user_info.map(new RichMapFunction<JSONObject, JSONObject>() {
             @Override
             public JSONObject map(JSONObject jsonObject){
@@ -233,15 +211,15 @@ public class UserInformationEquipment {
         });
 
 
-        SingleOutputStreamOperator<JSONObject> user_info_sup_msg = filter_water.map(JSON::parseObject)
-                .filter(o -> o.getJSONObject("source").getString("table").equals("user_info_sup_msg"));
-
+        //TODO  将用户信息数据流转换为包含年龄、年代和星座等计算字段的新数据流
         SingleOutputStreamOperator<JSONObject> user_if = finalUserInfoDs.map(new RichMapFunction<JSONObject, JSONObject>() {
             @Override
             public JSONObject map(JSONObject jsonObject) throws Exception {
+                // 创建结果对象，用于存储处理后的用户信息
                 JSONObject result = new JSONObject();
                 if (jsonObject.containsKey("after") && jsonObject.getJSONObject("after") != null) {
                     JSONObject after = jsonObject.getJSONObject("after");
+                    // 提取基本用户信息字段并放入结果对象
                     result.put("uid", after.getString("id"));
                     result.put("uname", after.getString("name"));
                     result.put("user_level", after.getString("user_level"));
@@ -252,14 +230,20 @@ public class UserInformationEquipment {
                     result.put("birthday", after.getString("birthday"));
                     result.put("ts_ms", jsonObject.getLongValue("ts_ms"));
                     String birthdayStr = after.getString("birthday");
+                    // 处理生日相关计算（年龄、年代、星座）
                     if (birthdayStr != null && !birthdayStr.isEmpty()) {
                         try {
+                            // 解析生日字符串为LocalDate对象（ISO格式：yyyy-MM-dd）
                             LocalDate birthday = LocalDate.parse(birthdayStr, DateTimeFormatter.ISO_DATE);
+                            // 获取当前日期（使用上海时区，确保时间计算准确）
                             LocalDate currentDate = LocalDate.now(ZoneId.of("Asia/Shanghai"));
+                            // 计算年龄（精确到当前日期）
                             int age = calculateAge(birthday, currentDate);
+                            // 计算年代（如1980、1990）
                             int decade = birthday.getYear() / 10 * 10;
                             result.put("decade", decade);
                             result.put("age", age);
+                            // 计算星座（基于出生日期）
                             String zodiac = getZodiacSign(birthday);
                             result.put("zodiac_sign", zodiac);
                         } catch (Exception e) {
@@ -271,10 +255,11 @@ public class UserInformationEquipment {
             }
         });
 
-
+        //TODO  将用户信息数据流转换为包含身高、体重字段的新数据流
         SingleOutputStreamOperator<JSONObject> mapUserInfoSupDs = user_info_sup_msg.map(new RichMapFunction<JSONObject, JSONObject>() {
             @Override
             public JSONObject map(JSONObject jsonObject) {
+                // 创建结果对象，用于存储处理后的用户信息
                 JSONObject result = new JSONObject();
                 if (jsonObject.containsKey("after") && jsonObject.getJSONObject("after") != null) {
                     JSONObject after = jsonObject.getJSONObject("after");
@@ -296,16 +281,14 @@ public class UserInformationEquipment {
         KeyedStream<JSONObject, String> keyedStreamUserInfoDs = finalUserinfoDs.keyBy(data -> data.getString("uid"));
         KeyedStream<JSONObject, String> keyedStreamUserInfoSupDs = finalUserinfoSupDs.keyBy(data -> data.getString("uid"));
 
-        SingleOutputStreamOperator<JSONObject> processIntervalJoinUserInfo6BaseMessageDs = keyedStreamUserInfoDs.intervalJoin(keyedStreamUserInfoSupDs)
+        //TODO intervalJoin 是一种流处理操作，用于在两个 按键分组的流（KeyedStream） 之间进行 基于时间间隔的连接
+        SingleOutputStreamOperator<JSONObject> processInter = keyedStreamUserInfoDs.intervalJoin(keyedStreamUserInfoSupDs)
                 .between(Time.minutes(-5), Time.minutes(5))
                 .process(new IntervalJoinUserInfoLabelProcessFunc());
 
 
 
-
-
-
-        SingleOutputStreamOperator<JSONObject> user_Information = keyedStreamUserInfoDs
+        SingleOutputStreamOperator<JSONObject> user_Information = processInter
                 .keyBy(jsonObject -> jsonObject.getString("uid"))
                 .intervalJoin(word_equipment.keyBy(jsonObject -> jsonObject.getString("uid")))
                 .between(Time.days(-3), Time.days(3))
@@ -318,6 +301,9 @@ public class UserInformationEquipment {
                         left.put("md", right.getString("md"));
                         left.put("keyword", right.getString("keyword"));
                         left.put("ba", right.getString("ba"));
+                        left.put("b1_category", right.getString("b1_category"));
+                        left.put("searchCategory", right.getString("searchCategory"));
+                        //设备打分
                         left.put("device_35_39", right.getString("device_35_39"));
                         left.put("device_50", right.getString("device_50"));
                         left.put("device_30_34", right.getString("device_30_34"));
@@ -326,6 +312,7 @@ public class UserInformationEquipment {
                         left.put("device_40_49", right.getString("device_40_49"));
                         left.put("search_25_29", right.getString("search_25_29"));
                         left.put("search_50", right.getString("search_50"));
+
                         left.put("search_40_49", right.getString("search_40_49"));
                         left.put("search_18_24", right.getString("search_18_24"));
                         left.put("search_35_39", right.getString("search_35_39"));
@@ -347,32 +334,11 @@ public class UserInformationEquipment {
                 //    这里使用lambda表达式 (value1, value2) -> value2 表示只保留第二个值（即最后一条记录）
                 .reduce((value1, value2) -> value2);
 
-        win2Minutes.print();
+       win2Minutes.print();
 
 //        win2Minutes
 //                .map(JSON::toJSONString)
-//                .addSink(KafkaUtil.getKafkaSink("win2Minutes"));
-
-
-
-
-
-
-        SingleOutputStreamOperator<JSONObject> user_to_order = user_Information
-                .keyBy(jsonObject -> jsonObject.getString("uid"))
-                .intervalJoin(order_fil.keyBy(jsonObject -> jsonObject.getString("userId")))
-                .between(Time.days(-10), Time.days(10))
-                .process(new ProcessJoinFunction<JSONObject, JSONObject, JSONObject>() {
-                    @Override
-                    public void processElement(JSONObject left, JSONObject right, ProcessJoinFunction<JSONObject, JSONObject, JSONObject>.Context ctx, Collector<JSONObject> out) throws Exception {
-                        left.put("trademarkName", right.getString("trademarkName"));
-                        left.put("orderAmount", right.getString("orderAmount"));
-                        left.put("createTime", right.getString("createTime"));
-                        out.collect(left);
-                    }
-                });
-
-       // user_to_order.print();
+//                .addSink(KafkaUtil.getKafkaSink("win2_minutes"));
 
 
 

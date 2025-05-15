@@ -84,6 +84,8 @@ public class AggregateUserDataProcessFunction1 extends KeyedProcessFunction<Stri
         String ch = jsonObject.getString("ch");        // 渠道
         String md = jsonObject.getString("md");        // 设备型号
         String ba = jsonObject.getString("ba");        // 浏览器
+        String b1_category = jsonObject.getString("b1_category");
+        String searchCategory = jsonObject.getString("searchCategory");
         String keyWord = jsonObject.containsKey("keyword") ? jsonObject.getString("keyword") : null;  // 搜索关键词
         String device_35_39 = jsonObject.getString("device_35_39");
         String device_50 = jsonObject.getString("device_50");
@@ -115,6 +117,8 @@ public class AggregateUserDataProcessFunction1 extends KeyedProcessFunction<Stri
         updateField("ch", ch);
         updateField("md", md);
         updateField("ba", ba);
+        updateField("b1_category", b1_category);
+        updateField("searchCategory", searchCategory);
         updateField("keyword", keyWord);
         updateField("device_35_39",device_35_39);
         updateField("device_50",device_50);
@@ -153,6 +157,8 @@ public class AggregateUserDataProcessFunction1 extends KeyedProcessFunction<Stri
         output.put("ch", String.join(",", getField("ch")));
         output.put("md", String.join(",", getField("md")));
         output.put("ba", String.join(",", getField("ba")));
+        output.put("b1_category", String.join(",", getField("b1_category")));
+        output.put("searchCategory", String.join(",", getField("searchCategory")));
         output.put("keyword", String.join(",", getField("keyword")));
         output.put("device_35_39", String.join(",", getField("device_35_39")));
         output.put("device_50", String.join(",", getField("device_50")));
