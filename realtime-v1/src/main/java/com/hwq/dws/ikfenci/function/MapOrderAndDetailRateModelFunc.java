@@ -13,8 +13,8 @@ import java.sql.Connection;
 import java.util.List;
 
 /**
- * @Package com.label.func.MapOrderAndDetailRateModelFunc
- * @Author zhou.han
+ * @Package com.com.hwq.dws.ikfenci.function
+ * @Author com.hwq
  * @Date 2025/5/15 08:40
  * @description:
  */

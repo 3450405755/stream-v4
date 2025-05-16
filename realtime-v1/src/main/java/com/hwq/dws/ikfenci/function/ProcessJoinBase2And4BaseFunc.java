@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * @Package com.label.func.Join2_4Process
- * @Author zhou.han
+ * @Package com.hwq.dws.ikfenci.function
+ * @Author com.hwq
  * @Date 2025/5/15 16:06
  * @description:
  */

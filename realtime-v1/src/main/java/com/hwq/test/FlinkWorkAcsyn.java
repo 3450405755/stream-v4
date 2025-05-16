@@ -1,4 +1,4 @@
-package com.hwq.ods;
+package com.hwq.test;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @Package com.hwq.ods.FlinkWorkAcsyn
+ * @Package com.hwq.test.FlinkWorkAcsyn
  * @Author hu.wen.qi
  * @Date 2025/5/12 20:07
  * @description: 1

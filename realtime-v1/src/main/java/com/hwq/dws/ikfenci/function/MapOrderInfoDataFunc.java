@@ -1,4 +1,4 @@
-package com.label.func;
+package com.hwq.dws.ikfenci.function;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.flink.api.common.functions.RichMapFunction;

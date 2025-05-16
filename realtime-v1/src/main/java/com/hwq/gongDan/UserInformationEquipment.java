@@ -115,8 +115,10 @@ public class UserInformationEquipment {
         SingleOutputStreamOperator<JSONObject> log_sou = log_water.process(new ProcessFunction<JSONObject, JSONObject>() {
             @Override
             public void processElement(JSONObject jsonObject, ProcessFunction<JSONObject, JSONObject>.Context ctx, Collector<JSONObject> out) throws Exception {
+                // 创建结果JSON对象，存储提取后的字段
                 JSONObject result = new JSONObject();
                 if (!jsonObject.getJSONObject("common").isEmpty() && jsonObject.containsKey("common")) {
+                    // 提取公共信息字段
                     JSONObject common = jsonObject.getJSONObject("common");
                     result.put("uid", common.getString("uid"));
                     result.put("ar", common.getString("ar"));
@@ -127,9 +129,13 @@ public class UserInformationEquipment {
                     result.put("os", os);
                     result.put("vc", common.getString("vc"));
                     result.put("ts", jsonObject.getString("ts"));
+                    // 检查是否包含"page"字段且不为空（通常存放页面浏览信息）
                     if (jsonObject.containsKey("page") && !jsonObject.getJSONObject("page").isEmpty()) {
+                        // 提取当前页面的项目名称
                         result.put("item", jsonObject.getJSONObject("page").getString("item"));
+                        // 提取页面项目类型（如"keyword"表示搜索关键词）
                         String s = jsonObject.getJSONObject("page").getString("item_type");
+                        // 仅当项目类型为"keyword"时，提取关键词并输出结果
                         if ("keyword".equals(s)) {
                             result.put("keyword", jsonObject.getJSONObject("page").getString("item"));
                             out.collect(result);
@@ -139,12 +145,16 @@ public class UserInformationEquipment {
             }
         });
 
+        //log_sou.print();
 
         SingleOutputStreamOperator<JSONObject> filterNotNullUidLogPageMsg = log_sou.filter(jsonObject -> !jsonObject.getString("uid").isEmpty());
         KeyedStream<JSONObject, String> keyedStreamLogPageMsg = filterNotNullUidLogPageMsg.keyBy(jsonObject -> jsonObject.getString("uid"));
 
-        //去重
+        //keyedStreamLogPageMsg.print();
+
+        //去重 业务逻辑重复触发（如用户重复点击提交按钮），导致生产者生成重复数据。
         SingleOutputStreamOperator<JSONObject> log_distisct = keyedStreamLogPageMsg.process(new ProcessFilterRepeatTsData());
+
 
         // 2 min 分钟窗口
         SingleOutputStreamOperator<JSONObject> win2MinutesPageLogsDs = log_distisct.keyBy(data -> data.getString("uid"))
@@ -159,7 +169,9 @@ public class UserInformationEquipment {
         //TODO 设备打分模型
         SingleOutputStreamOperator<JSONObject> word_equipment = win2MinutesPageLogsDs.map(new MapDeviceAndSearchMarkModelFunc(dim_base_categories, device_rate_weight_coefficient, search_rate_weight_coefficient));
 
-       // word_equipment.print();
+        //word_equipment.print();
+
+
 
 
 
@@ -196,19 +208,28 @@ public class UserInformationEquipment {
 
         //例如将用户的生日10000转换成2001-01-01
         SingleOutputStreamOperator<JSONObject> finalUserInfoDs = user_info.map(new RichMapFunction<JSONObject, JSONObject>() {
+
             @Override
             public JSONObject map(JSONObject jsonObject){
+                // 从输入的JSON对象中提取"after"字段（通常表示变更后的用户信息）
                 JSONObject after = jsonObject.getJSONObject("after");
+                // 检查"after"字段是否存在且包含"birthday"属性
                 if (after != null && after.containsKey("birthday")) {
+                    // 提取生日字段的值（假设存储为Java epochDay格式，即从1970-01-01开始的天数）
                     Integer epochDay = after.getInteger("birthday");
+                   // 检查epochDay是否有效（非null）
                     if (epochDay != null) {
+                        // 将epochDay转换为LocalDate对象（基于UTC时间，不包含时区）
                         LocalDate date = LocalDate.ofEpochDay(epochDay);
+                        // 将LocalDate格式化为ISO日期字符串（格式：yyyy-MM-dd）
                         after.put("birthday", date.format(DateTimeFormatter.ISO_DATE));
                     }
                 }
                 return jsonObject;
             }
         });
+
+
 
 
         //TODO  将用户信息数据流转换为包含年龄、年代和星座等计算字段的新数据流
@@ -255,6 +276,8 @@ public class UserInformationEquipment {
             }
         });
 
+        user_if.print();
+
         //TODO  将用户信息数据流转换为包含身高、体重字段的新数据流
         SingleOutputStreamOperator<JSONObject> mapUserInfoSupDs = user_info_sup_msg.map(new RichMapFunction<JSONObject, JSONObject>() {
             @Override
@@ -282,9 +305,13 @@ public class UserInformationEquipment {
         KeyedStream<JSONObject, String> keyedStreamUserInfoSupDs = finalUserinfoSupDs.keyBy(data -> data.getString("uid"));
 
         //TODO intervalJoin 是一种流处理操作，用于在两个 按键分组的流（KeyedStream） 之间进行 基于时间间隔的连接
+        // intervalJoin 能在两个流中，依据设定的时间间隔，找出在时间上存在关联的数据，设定合适的时间间隔，然后将这部分关联成功的数据作为一个新的流（分流）进行后续处理
         SingleOutputStreamOperator<JSONObject> processInter = keyedStreamUserInfoDs.intervalJoin(keyedStreamUserInfoSupDs)
                 .between(Time.minutes(-5), Time.minutes(5))
                 .process(new IntervalJoinUserInfoLabelProcessFunc());
+
+
+
 
 
 
@@ -321,7 +348,7 @@ public class UserInformationEquipment {
                     }
                 });
 
-        //user_Information.print();
+       // user_Information.print();
 
 
 
@@ -334,7 +361,7 @@ public class UserInformationEquipment {
                 //    这里使用lambda表达式 (value1, value2) -> value2 表示只保留第二个值（即最后一条记录）
                 .reduce((value1, value2) -> value2);
 
-       win2Minutes.print();
+      // win2Minutes.print();
 
 //        win2Minutes
 //                .map(JSON::toJSONString)

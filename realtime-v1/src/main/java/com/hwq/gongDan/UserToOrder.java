@@ -78,35 +78,25 @@ public class UserToOrder {
                         left.put("split_total_amount", right.getString("split_total_amount"));
                         left.put("price", right.getString("price"));
                         JSONObject tm_code = right.getJSONObject("tm_code");
+                        JSONObject time_code = right.getJSONObject("time_code");
                         JSONObject amountWeight = new JSONObject();
                         for (String s : list4) {
                             double v = right.getDoubleValue("amount_" + s);
                             String s1 = s.replace("-", "_");
                             amountWeight.put(s1, v);
                         };
-                        JSONObject tmcode = new JSONObject();
-                        for (String s : list4) {
-                            double v = right.getDoubleValue("tm_code_" + s);
-                            String s1 = s.replace("-", "_");
-                            tmcode.put(s1, v);
-                        };
-                        JSONObject tmtime = new JSONObject();
-                        for (String s : list4) {
-                            double v = right.getDoubleValue("tm_time_" + s);
-                            String s1 = s.replace("-", "_");
-                            tmtime.put(s1, v);
-                        };
+
 
                         JSONObject search = new JSONObject();
                         for (String s : list4) {
-                            double v = right.getDoubleValue("search_" + s);
+                            double v = left.getDoubleValue("search_" + s);
                             String s1 = s.replace("-", "_");
                             search.put(s1, v);
                         };
 
                         JSONObject device = new JSONObject();
                         for (String s : list4) {
-                            double v = right.getDoubleValue("device_" + s);
+                            double v = left.getDoubleValue("device_" + s);
                             String s1 = s.replace("-", "_");
                             device.put(s1, v);
                         };
@@ -118,7 +108,7 @@ public class UserToOrder {
                             keyword.put(s1, v);
                         };
 
-                        String age = getInferredAge(tm_code, tmcode, tmtime, amountWeight, device, keyword);
+                        String age = getInferredAge(search,  tm_code, time_code, amountWeight, device, keyword);
 
                        left.put("inferredAge", age);
                         out.collect(left);
@@ -126,6 +116,8 @@ public class UserToOrder {
                 });
 
       user_details_information.print("--------------------------------------------");
+
+        //user_details_information.writeAsText("E:\\001浏览器/output.csv").setParallelism(1);
 
 
         env.disableOperatorChaining();

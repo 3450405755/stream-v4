@@ -30,12 +30,11 @@ import java.util.List;
  * @description: 1
  */
 public class OrderOne {
-    private static final List<DimBaseCategory> dim_base_categories = null;
-    private static final Connection connection = null;
+    private static List<DimBaseCategory> dim_base_categories ;
+    private static Connection connection ;
 
     private static final double search_rate_weight_coefficient = 0.15; // 搜索权重系数
     private static final double time_rate_weight_coefficient = 0.1;    // 时间权重系数
-    private static final double amount_rate_weight_coefficient = 0.15;    // 价格权重系数
     private static final double brand_rate_weight_coefficient = 0.2;    // 品牌权重系数
 
     @SneakyThrows
@@ -60,6 +59,7 @@ public class OrderOne {
         SingleOutputStreamOperator<JSONObject> order_user = order_water.process(new ProcessFunction<JSONObject, JSONObject>() {
             @Override
             public void processElement(JSONObject jsonObject, ProcessFunction<JSONObject, JSONObject>.Context ctx, Collector<JSONObject> out) throws Exception {
+                // 创建结果JSON对象，存储提取后的字段
                 JSONObject result = new JSONObject();
                 result.put("uid", jsonObject.getString("user_id"));
                 result.put("create_time", jsonObject.getString("create_time"));
