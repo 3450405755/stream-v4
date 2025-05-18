@@ -16,6 +16,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+//用户类目实体类
 public class DimBaseCategory implements Serializable {
 
     private String id;

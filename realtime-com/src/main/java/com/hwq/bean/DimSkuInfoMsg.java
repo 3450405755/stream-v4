@@ -15,6 +15,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+
 public class DimSkuInfoMsg implements Serializable {
     private String skuid;
     private String spuid;

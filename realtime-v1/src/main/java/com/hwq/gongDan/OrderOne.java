@@ -47,6 +47,7 @@ public class OrderOne {
 
         KeyedStream<JSONObject, Boolean> order_info = map.keyBy(jsonObject -> !jsonObject.getString("user_id").isEmpty());
 
+        //水位线
         SingleOutputStreamOperator<JSONObject> order_water = order_info.assignTimestampsAndWatermarks(WatermarkStrategy.<JSONObject>forMonotonousTimestamps().withTimestampAssigner(new SerializableTimestampAssigner<JSONObject>() {
             @Override
             public long extractTimestamp(JSONObject jsonObject, long l) {

@@ -17,6 +17,7 @@ public class Orderutil  extends RichMapFunction<JSONObject,JSONObject> {
     private static final double tmRate = 0.2;
     private static final double timeRate = 0.15;
     private static final double priceRate = 0.1;
+    //读取本地文件路径
     private static final String c1Path = "E:\\工单\\工单\\txt\\/c1Weight.txt";
     private static final String pricePath = "E:\\工单\\工单\\txt\\/priceWeight.txt";
     private static final String timePath = "E:\\工单\\工单\\txt/timeWeight.txt";

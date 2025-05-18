@@ -276,7 +276,7 @@ public class UserInformationEquipment {
             }
         });
 
-        user_if.print();
+
 
         //TODO  将用户信息数据流转换为包含身高、体重字段的新数据流
         SingleOutputStreamOperator<JSONObject> mapUserInfoSupDs = user_info_sup_msg.map(new RichMapFunction<JSONObject, JSONObject>() {
@@ -361,7 +361,7 @@ public class UserInformationEquipment {
                 //    这里使用lambda表达式 (value1, value2) -> value2 表示只保留第二个值（即最后一条记录）
                 .reduce((value1, value2) -> value2);
 
-      // win2Minutes.print();
+    win2Minutes.print();
 
 //        win2Minutes
 //                .map(JSON::toJSONString)

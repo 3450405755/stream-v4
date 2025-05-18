@@ -28,8 +28,6 @@ public class UserToOrder {
     private static final String[] list2 = {"18_24", "25_29", "30_34", "35_39", "40_49", "50"};
 
     private static final String[] list4 = {"18-24", "25-29", "30-34", "35-39", "40-49", "50"};
-    private static final double keyWordRate = 0.15;
-    private static final double deviceRate = 0.1;
     private static final double c1Rate = 0.3;
     private static final double tmRate = 0.2;
     private static final double timeRate = 0.15;
