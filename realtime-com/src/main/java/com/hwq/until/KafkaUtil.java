@@ -11,6 +11,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
 
 public class KafkaUtil {
 
+    //kafka主题
     private static String brokers = "cdh01:9092,cdh02:9092,cdh03:9092";
     private static String default_topic = "DWD_DEFAULT_TOPIC";
 

@@ -54,9 +54,11 @@ public class FlinkWorkAcsyn {
         }));
 
 
+
         SingleOutputStreamOperator<JSONObject> map = filter.map(new RichMapFunction<JSONObject, JSONObject>() {
             @Override
             public JSONObject map(JSONObject jsonObject) throws Exception {
+                //创建一个新对象将数据存进去
                 JSONObject object = new JSONObject();
                 object.put("user_id",jsonObject.getJSONObject("after").getString("user_id"));
                 object.put("name",jsonObject.getString("name"));

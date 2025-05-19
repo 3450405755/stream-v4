@@ -17,6 +17,7 @@ public class JdbcUtils {
 
     public static Connection getMySQLConnection(String mysqlUrl,String username,String pwd) throws Exception {
         Class.forName("com.mysql.cj.jdbc.Driver");
+        //连接mysql
         return DriverManager.getConnection("jdbc:mysql://cdh03:3306", "root", "root");
     }
 

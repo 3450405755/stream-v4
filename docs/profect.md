@@ -46,4 +46,108 @@ doris物化图概念:。Doris 物化视图是一种将查询结果预先存储�
 搜索词频:按照搜索词分区,统计出搜索词出现的次数。
 ![img.png](imgs/img_6.png)
 
+//oracle建表  
+-- 创建名为ZYSERVICESPACE的表空间，用于存储数据库对象
+CREATE TABLESPACE ZYSERVICESPACE
+-- 指定数据文件的路径，需确保该路径存在且Oracle用户有读写权限
+DATAFILE 'E:\orcl\pdbseed'
+-- 初始大小为1024MB
+SIZE 1024M
+-- 启用自动扩展功能
+AUTOEXTEND ON
+-- 每次扩展的增量为100MB
+NEXT 100M
+-- 最大大小无限制（生产环境建议设置合理上限）
+MAXSIZE UNLIMITED;
+
+-- 创建数据库用户ZYDEVER，密码为zydev2021
+CREATE USER ZYDEVER
+IDENTIFIED BY "zydev2021"
+-- 指定默认表空间为ZYSERVICESPACE
+DEFAULT TABLESPACE ZYSERVICESPACE
+-- 使用默认的资源限制配置文件
+PROFILE DEFAULT
+-- 创建后立即解锁账户
+ACCOUNT UNLOCK;
+
+-- 授予用户基本权限：
+-- CONNECT角色：允许用户连接到数据库
+-- RESOURCE角色：允许用户创建表、序列等基本对象
+GRANT CONNECT, RESOURCE TO ZYDEVER;
+
+-- 授予用户无限制使用表空间的权限（不推荐生产环境）
+GRANT UNLIMITED TABLESPACE TO ZYDEVER;
+
+-- 在ZYDEVER模式下创建名为name的表（存储员工信息）
+CREATE TABLE ZYDEVER.name (
+-- 员工ID，数字类型(长度10)，设为主键
+emp_id NUMBER(10) PRIMARY KEY,
+-- 员工姓名，字符串类型(最大50字符)，不可为空
+emp_name VARCHAR2(50) NOT NULL,
+-- 部门名称，字符串类型(最大50字符)
+department VARCHAR2(50),
+-- 薪水，数字类型(总长度10，小数位2)
+salary NUMBER(10, 2),
+-- 入职日期，默认为当前系统日期
+hire_date DATE DEFAULT SYSDATE
+);
+
+-- 插入一条员工记录（指定列名）
+INSERT INTO ZYDEVER.name (emp_id, emp_name, department, salary)
+VALUES (1, 'John Doe', 'IT', 5000.00);
+
+-- 插入另一条员工记录（按表结构顺序提供所有字段值）
+INSERT INTO ZYDEVER.name
+VALUES (2, 'Jane Smith', 'HR', 6000.00, TO_DATE('2023-01-15', 'YYYY-MM-DD'));
+
+-- 查询ZYDEVER模式下的name表中的所有记录
+SELECT * FROM ZYDEVER.name;
+
+
+-- 构建基础查询获取员工信息
+WITH base_data AS (
+SELECT emp_id, emp_name, department, salary
+FROM ZYDEVER.name
+)
+-- 使用PIVOT进行行转列操作
+SELECT *
+FROM base_data
+PIVOT (
+-- 聚合函数，这里以获取最大薪水为例（实际根据需求调整聚合逻辑）
+MAX(salary) AS max_salary,
+MAX(department) AS dept
+FOR emp_name IN ('John Doe' AS john_doe, 'Jane Smith' AS jane_smith)
+);
+
+
+
+
+
+
+CREATE TABLE ZYDEVER.EMP_SUMMARY (
+emp_id   NUMBER,
+emp_name VARCHAR2(50),
+dept_10  NUMBER,  -- 部门10的薪资
+dept_20  NUMBER,  -- 部门20的薪资
+dept_30  NUMBER   -- 部门30的薪资
+);
+
+INSERT INTO ZYDEVER.EMP_SUMMARY VALUES (1, 'John', 5000, 5500, 6000);
+INSERT INTO ZYDEVER.EMP_SUMMARY VALUES (2, 'Jane', 6500, 7000, 7500);
+
+select * from ZYDEVER.EMP_SUMMARY;
+
+SELECT emp_id, emp_name, department, salary
+FROM ZYDEVER.EMP_SUMMARY
+UNPIVOT (
+salary               -- 转换后的值列
+FOR department IN (  -- 转换后的名列
+dept_10 AS '10',
+dept_20 AS '20',
+dept_30 AS '30'
+)
+);
+
+
+
 
