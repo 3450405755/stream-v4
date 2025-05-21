@@ -75,7 +75,7 @@ public class Test {
         // "db":"dev_realtime_v3_wenqi_hu","sequence":null,"table":"order_detail","server_id":1,"gtid":null,"file":"mysql-bin.000002","pos":3825924,"row":0,"thread":null,"query":null},"op":"c","ts_ms":1744091723610,"transaction":null}
          //ds2.print();
 
-       //kafka.print();
+       kafka.print();
        kafka.addSink(KafkaUtil.getKafkaSink("log_topic"));
 
 
