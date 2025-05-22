@@ -18,7 +18,7 @@ public class Test {
         env.setParallelism(1);
 
         DataStreamSource<String> kafkaSource = KafkaUtil.getKafkaSource(env, "topic_log", "ac");
-        kafkaSource.print();
+       // kafkaSource.print();
 
 
         env.execute();

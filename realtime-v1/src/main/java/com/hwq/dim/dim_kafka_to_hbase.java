@@ -152,7 +152,7 @@ public class dim_kafka_to_hbase {
                 ReadOnlyBroadcastState<String, TableProcessDin> state = readOnlyContext.getBroadcastState(mapStateDescriptor);
 
                 Thread.sleep(100);
-                System.out.println("processElement" + jsonObj);
+               // System.out.println("processElement" + jsonObj);
                 //获取主流内的table表名
                 String table = jsonObj.getJSONObject("source").getString("table");
 

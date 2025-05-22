@@ -60,21 +60,21 @@ public class log_to_kafka {
         });
 
         SideOutputDataStream<String> start_Ds = rizhi_liu.getSideOutput(startTag);
-        //start_Ds.print("start_Ds");
+        start_Ds.print("start_Ds");
         SideOutputDataStream<String> page_Ds = rizhi_liu.getSideOutput(pageTag);
-        //page_Ds.print("page_Ds");
+        page_Ds.print("page_Ds");
         SideOutputDataStream<String> displays_Ds = rizhi_liu.getSideOutput(displaysTag);
-        //displays_Ds.print("displays_Ds");
+        displays_Ds.print("displays_Ds");
         SideOutputDataStream<String> actions_Ds = rizhi_liu.getSideOutput(actionsTag);
-        //actions_Ds.print("actions_Ds");
+        actions_Ds.print("actions_Ds");
         SideOutputDataStream<String> err_Ds = rizhi_liu.getSideOutput(errTag);
-        //err_Ds.print("err_Ds");
+        err_Ds.print("err_Ds");
 
-        start_Ds.addSink(KafkaUtil.getKafkaSink("start_log"));
-        page_Ds.addSink(KafkaUtil.getKafkaSink("page_log"));
-        displays_Ds.addSink(KafkaUtil.getKafkaSink("displays_log"));
-        actions_Ds.addSink(KafkaUtil.getKafkaSink("actions_log"));
-        err_Ds.addSink(KafkaUtil.getKafkaSink("err_log"));
+//        start_Ds.addSink(KafkaUtil.getKafkaSink("start_log"));
+//        page_Ds.addSink(KafkaUtil.getKafkaSink("page_log"));
+//        displays_Ds.addSink(KafkaUtil.getKafkaSink("displays_log"));
+//        actions_Ds.addSink(KafkaUtil.getKafkaSink("actions_log"));
+//        err_Ds.addSink(KafkaUtil.getKafkaSink("err_log"));
 
 
 
