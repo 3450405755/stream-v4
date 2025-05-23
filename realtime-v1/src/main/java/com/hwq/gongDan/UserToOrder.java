@@ -52,7 +52,7 @@ public class UserToOrder {
         //读取订单
         DataStreamSource<String> kafkaSource1 = KafkaUtil.getKafkaSource(env, "order_two", "a2");
         SingleOutputStreamOperator<JSONObject> order = kafkaSource1.map(JSON::parseObject);
-//        order.print();
+        order.print();
 
         KeyedStream<JSONObject, String> user_key = user.filter(jsonObject -> !jsonObject.getString("uid").isEmpty() && jsonObject.containsKey("uid"))
                 .keyBy(jsonObject -> jsonObject.getString("uid"));

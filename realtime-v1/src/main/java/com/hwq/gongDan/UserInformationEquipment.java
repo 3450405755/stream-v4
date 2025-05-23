@@ -348,7 +348,7 @@ public class UserInformationEquipment {
                     }
                 });
 
-        user_Information.print();
+        //user_Information.print();
 
 
 
