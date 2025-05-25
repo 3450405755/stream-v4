@@ -517,15 +517,15 @@ public class DwsTradeSkuOrderWindow {
                     }
                 });
 
-        //withCategoryfoDS1.print();
+        withCategoryfoDS1.print();
 
 //        withCategoryfoDS1
 //                .map(JSON::toJSONString)
 //                .addSink(KafkaUtil.getKafkaSink("trade_sku_order_window"));
 
 
-        SingleOutputStreamOperator<String> map = withCategory1foDS.map(JSON::toJSONString);
-        map.print();
+//        SingleOutputStreamOperator<String> map = withCategory1foDS.map(JSON::toJSONString);
+//        map.print();
       // map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_sku_order_window"));
 
 
