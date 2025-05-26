@@ -137,7 +137,7 @@ public class Dwd_Trade_Order_Refund {
                         "PRIMARY KEY (id) NOT ENFORCED " +
                         ")" + SQLUtil.getUpsertKafkaDDL(Constant.TOPIC_DWD_TRADE_ORDER_REFUND));
 
-        result.executeInsert(Constant.TOPIC_DWD_TRADE_ORDER_REFUND);
+        //result.executeInsert(Constant.TOPIC_DWD_TRADE_ORDER_REFUND);
 
 
     }

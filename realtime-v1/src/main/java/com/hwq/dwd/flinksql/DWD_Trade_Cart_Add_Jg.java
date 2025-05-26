@@ -67,6 +67,6 @@ public class DWD_Trade_Cart_Add_Jg {
                 "        'value.format' = 'json'\n" +
                 "      )");
 
-        cartInfo.executeInsert(Constant.TOPIC_DWD_TRADE_CART_ADD);
+       // cartInfo.executeInsert(Constant.TOPIC_DWD_TRADE_CART_ADD);
     }
 }
