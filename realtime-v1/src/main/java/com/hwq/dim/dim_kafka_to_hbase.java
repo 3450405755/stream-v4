@@ -200,7 +200,7 @@ public class dim_kafka_to_hbase {
                 }
             }
         });
-        dimDS.print("1-->");
+        //dimDS.print("1-->");
 
 
         dimDS.addSink(new SinkFunction<Tuple2<JSONObject, TableProcessDin>>() {

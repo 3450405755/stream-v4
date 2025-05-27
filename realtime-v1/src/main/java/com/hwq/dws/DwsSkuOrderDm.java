@@ -238,11 +238,11 @@ public class DwsSkuOrderDm {
             }
         }, 60, TimeUnit.SECONDS);
 
-        //tm_connect.print();
+        tm_connect.print();
 //
-        tm_connect
-                .map(JSONObject::toString)
-                .addSink(KafkaUtil.getKafkaSink("dws_order_detail"));
+//        tm_connect
+//                .map(JSONObject::toString)
+//                .addSink(KafkaUtil.getKafkaSink("dws_order_detail"));
 
 
 

@@ -48,7 +48,7 @@ public class Test {
                 .fromSource(mySqlSource, WatermarkStrategy.noWatermarks(), "MySQL Source");
 
 
-        ds1.print();
+        //ds1.print();
 
         //{"before":null,"after":{"id":3447,"order_id":2134,"sku_id":5,"sku_name":"Redmi 10X 4G Helio G85游戏芯 4800万超清四摄 5020mAh大电量 小孔全面屏 128GB大存储 4GB+128GB 明月灰 游戏智能手机 小米 红米","img_url":null,"order_price":999.0,"sku_num":1,"create_time":1744049874000,"split_total_amount":999.0,"split_activity_amount":0.0,
         // "split_coupon_amount":0.0,"operate_time":null},"source":{"version":"1.6.4.Final","connector":"mysql","name":"mysql_binlog_source","ts_ms":1744076986000,"snapshot":"false","db":"dev_realtime_v3_wenqi_hu","sequence":null,
@@ -73,7 +73,7 @@ public class Test {
         // "create_time":1744049874000,"split_total_amount":999.0,"split_activity_amount":0.0,"split_coupon_amount":0.0,"operate_time":null},
         // "source":{"version":"1.6.4.Final","connector":"mysql","name":"mysql_binlog_source","ts_ms":1744076986000,"snapshot":"false",
         // "db":"dev_realtime_v3_wenqi_hu","sequence":null,"table":"order_detail","server_id":1,"gtid":null,"file":"mysql-bin.000002","pos":3825924,"row":0,"thread":null,"query":null},"op":"c","ts_ms":1744091723610,"transaction":null}
-         //ds2.print();
+
 
        kafka.print();
        //kafka.addSink(KafkaUtil.getKafkaSink("log_topic"));
