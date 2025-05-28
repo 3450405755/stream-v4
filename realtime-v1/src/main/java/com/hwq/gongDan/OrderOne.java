@@ -108,7 +108,7 @@ public class OrderOne {
                 .reduce((value1, value2) -> value2);
 
         SingleOutputStreamOperator<JSONObject> orderFinal = orderFinalDs.map(new MapOrderAndDetailRateModelFunc(dim_base_categories, search_rate_weight_coefficient, time_rate_weight_coefficient, brand_rate_weight_coefficient));
-        orderFinal.print();
+       // orderFinal.print();
 
 //
 //                orderFinal

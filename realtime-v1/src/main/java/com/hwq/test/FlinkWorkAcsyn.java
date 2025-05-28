@@ -91,7 +91,7 @@ public class FlinkWorkAcsyn {
             }
         });
 
-        map.print();
+       // map.print();
 
 
         env.execute();

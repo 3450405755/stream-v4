@@ -71,10 +71,10 @@ public class DbusBanBlackListUserInfo2Kafka {
             }
         });
 
-       //secondCheckMap.print();
+       secondCheckMap.print();
 
-        secondCheckMap.map(JSON::toJSONString)
-                        .sinkTo(SinkDoris.getDorisSink("dws_to_doris","sensitive_words"));
+//        secondCheckMap.map(JSON::toJSONString)
+//                        .sinkTo(SinkDoris.getDorisSink("dws_to_doris","sensitive_words"));
 
 
         env.execute();

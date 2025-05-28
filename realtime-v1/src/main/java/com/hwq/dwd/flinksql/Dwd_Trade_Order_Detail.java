@@ -135,7 +135,7 @@ public class Dwd_Trade_Order_Detail {
                         "left join order_detail_coupon cou " +
                         "on od.id=cou.order_detail_id ");
 
-       //result.execute().print();
+       result.execute().print();
 
         //TODO 将关联的结果写到Kafka主题
         //创建动态表和要写入的主题进行映射

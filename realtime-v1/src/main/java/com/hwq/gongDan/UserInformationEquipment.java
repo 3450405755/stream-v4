@@ -361,7 +361,7 @@ public class UserInformationEquipment {
                 //    这里使用lambda表达式 (value1, value2) -> value2 表示只保留第二个值（即最后一条记录）
                 .reduce((value1, value2) -> value2);
 
-    win2Minutes.print();
+    //win2Minutes.print();
 
 //        win2Minutes
 //                .map(JSON::toJSONString)

@@ -113,7 +113,7 @@ public class UserToOrder {
                     }
                 });
 
-      user_details_information.print("--------------------------------------------");
+    //  user_details_information.print("--------------------------------------------");
 
         //user_details_information.writeAsText("E:\\001浏览器/output.csv").setParallelism(1);
 

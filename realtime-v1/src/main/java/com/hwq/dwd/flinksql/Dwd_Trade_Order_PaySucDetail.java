@@ -129,7 +129,7 @@ public class Dwd_Trade_Order_PaySucDetail {
                         "on pi.payment_type=dic.dic_code ");
 
          tableEnv.createTemporaryView("result", result);
-        // result.execute().print();
+
 //        //TODO 将关联的结果写到kafka主题中
         tableEnv.executeSql("create table "+ Constant.TOPIC_DWD_TRADE_ORDER_PAYMENT_SUCCESS+"(" +
                 "order_detail_id string," +

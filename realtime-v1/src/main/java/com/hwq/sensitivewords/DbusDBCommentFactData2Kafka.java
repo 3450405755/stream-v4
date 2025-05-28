@@ -218,11 +218,11 @@ public class DbusDBCommentFactData2Kafka {
             }
         });
 
-        //suppleTimeFieldDs.print();
+        suppleTimeFieldDs.print();
 
-        suppleTimeFieldDs
-                .map(o ->o.toJSONString())
-                        .addSink(KafkaUtil.getKafkaSink("sensitivewords_log"));
+//        suppleTimeFieldDs
+//                .map(o ->o.toJSONString())
+//                        .addSink(KafkaUtil.getKafkaSink("sensitivewords_log"));
 
 
 

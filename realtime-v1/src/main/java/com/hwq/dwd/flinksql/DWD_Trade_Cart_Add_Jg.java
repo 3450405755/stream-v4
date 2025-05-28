@@ -50,7 +50,7 @@ public class DWD_Trade_Cart_Add_Jg {
                 "    (`op`='update' and `before`['sku_num'] is not null and (CAST(after['sku_num'] AS INT) > CAST(`before`['sku_num'] AS INT)))\n" +
                 ")");
 
-        //cartInfo.execute().print();
+        cartInfo.execute().print();
 
         tEnv.executeSql("  CREATE TABLE "+ Constant.TOPIC_DWD_TRADE_CART_ADD +" (\n" +
                 "        id String,\n" +
