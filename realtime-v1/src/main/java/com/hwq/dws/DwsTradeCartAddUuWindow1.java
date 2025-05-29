@@ -160,7 +160,7 @@ public class DwsTradeCartAddUuWindow1 {
         //aggregateDS.print();
 
         SingleOutputStreamOperator<String> map = aggregateDS.map(JSON::toJSONString);
-        map.print();
+//        map.print();
         //map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_cart_addUu_window1"));
 
 
