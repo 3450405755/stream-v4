@@ -157,7 +157,7 @@ public class DwsTradeCartAddUuWindow1 {
                 }
         );
         //TODO 7.将聚合的结果写到Doris
-        //aggregateDS.print();
+        aggregateDS.print();
 
         SingleOutputStreamOperator<String> map = aggregateDS.map(JSON::toJSONString);
 //        map.print();
