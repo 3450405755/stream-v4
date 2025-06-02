@@ -114,9 +114,9 @@ public class DwdBaseDb {
 
         SingleOutputStreamOperator<Tuple2<JSONObject, TableProcessDwd>> splitDS = connectDS.process(new BaseDbTableProcessFunction(mapStateDescriptor));
 
-        //splitDS.print("1-->");
+        splitDS.print("1-->");
 
-        splitDS.sinkTo(FlinkSinkUtil.getKafkaSink());
+//        splitDS.sinkTo(FlinkSinkUtil.getKafkaSink());
 
 
         env.execute();

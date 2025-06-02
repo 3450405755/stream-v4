@@ -157,10 +157,10 @@ public class DwsTradeCartAddUuWindow1 {
                 }
         );
         //TODO 7.将聚合的结果写到Doris
-        aggregateDS.print();
+//        aggregateDS.print();
 
         SingleOutputStreamOperator<String> map = aggregateDS.map(JSON::toJSONString);
-//        map.print();
+        map.print();
         //map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_cart_addUu_window1"));
 
 
