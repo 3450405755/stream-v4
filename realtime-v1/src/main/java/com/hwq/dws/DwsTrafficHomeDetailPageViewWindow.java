@@ -167,7 +167,7 @@ public class DwsTrafficHomeDetailPageViewWindow {
         //reduceDS.print();
 
         SingleOutputStreamOperator<String> map = reduceDS.map(JSON::toJSONString);
-        map.print();
+//        map.print();
        // map.sinkTo(SinkDoris.getDori  sSink("dws_to_doris","dws_traffic_home_detail_page_view_window"));
         env.execute();
     }

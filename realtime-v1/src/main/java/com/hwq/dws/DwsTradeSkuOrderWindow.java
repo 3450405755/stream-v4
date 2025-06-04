@@ -517,7 +517,7 @@ public class DwsTradeSkuOrderWindow {
                     }
                 });
 
-//        withCategoryfoDS1.print();
+        withCategoryfoDS1.print();
 
 //        withCategoryfoDS1
 //                .map(JSON::toJSONString)
@@ -525,7 +525,7 @@ public class DwsTradeSkuOrderWindow {
 
 
         SingleOutputStreamOperator<String> map = withCategory1foDS.map(JSON::toJSONString);
-        map.print();
+//        map.print();
       // map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_sku_order_window"));
 
 

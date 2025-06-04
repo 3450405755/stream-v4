@@ -192,7 +192,7 @@ public class DwsTrafficVcChArIsNewPageViewWindow {
 
 
         SingleOutputStreamOperator<String> map = reduceDS.map(JSON::toJSONString);
-        map.print();
+//        map.print();
         //map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_traffic_vcchar_isnew_pageviewwindow1"));
 
 

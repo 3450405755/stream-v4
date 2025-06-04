@@ -154,7 +154,7 @@ public class DwsTradeCartAddUuWindow {
         //reduceDS.print();
 
         SingleOutputStreamOperator<String> map = reduceDS.map(JSON::toJSONString);
-        map.print();
+//        map.print();
         //map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","user_login_bean"));
 
 

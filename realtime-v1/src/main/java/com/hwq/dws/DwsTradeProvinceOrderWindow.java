@@ -214,7 +214,7 @@ public class DwsTradeProvinceOrderWindow {
         //provices_Ds.print();
 
         SingleOutputStreamOperator<String> map = provices_Ds.map(JSON::toJSONString);
-        map.print();
+//        map.print();
       //map.sinkTo(SinkDoris.getDorisSink("dws_to_doris","dws_trade_province_order_window"));
 
 
