@@ -517,7 +517,7 @@ public class DwsTradeSkuOrderWindow {
                     }
                 });
 
-        withCategoryfoDS1.print();
+//        withCategoryfoDS1.print();
 
 //        withCategoryfoDS1
 //                .map(JSON::toJSONString)
